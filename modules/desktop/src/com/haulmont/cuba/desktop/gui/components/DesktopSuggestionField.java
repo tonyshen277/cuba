@@ -50,8 +50,9 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
     private final Logger log = LoggerFactory.getLogger(DesktopSuggestionField.class);
 
+    private AutomaticCompletionSupport automaticCompletion;
+
     protected BasicEventList<Object> items = new BasicEventList<>();
-    protected SearchAutoCompleteSupport<Object> autoComplete;
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected boolean resetValueState = false;
@@ -199,8 +200,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         comboBox.setEditable(true);
         comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
 
-        autoComplete = SearchAutoCompleteSupport.install(comboBox, items);
-        autoComplete.setFilterEnabled(false);
+        automaticCompletion = installAutomaticCompletionSupport();
 
         for (int i = 0; i < comboBox.getComponentCount(); i++) {
             Component component = comboBox.getComponent(i);
@@ -229,7 +229,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
                     @Override
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                        if (!autoComplete.isEditableState()) {
+                        if (!isAutomaticCompletionEditableState()) {
                             popupItemSelectionHandling = comboBox.getSelectedIndex() >= 0;
 
                             // Only if really item changed
@@ -266,6 +266,28 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         asyncSearchDelayMs = configuration.getConfig(ClientConfig.class).getSuggestionFieldAsyncSearchDelayMs();
+    }
+
+    protected AutomaticCompletionSupport installAutomaticCompletionSupport() {
+        final SearchAutoCompleteSupport<Object> support = installSearchAutoCompleteSupport();
+        setupSearchAutoCompleteSupport(support);
+        return new AutomaticCompletionSupport() {
+            @Override public boolean isEditableState() {
+                return support.isEditableState();
+            }
+        };
+    }
+
+    protected SearchAutoCompleteSupport<Object> installSearchAutoCompleteSupport() {
+        return SearchAutoCompleteSupport.install(comboBox, items);
+    }
+
+    protected void setupSearchAutoCompleteSupport(SearchAutoCompleteSupport<Object> instance) {
+        instance.setFilterEnabled(false);
+    }
+
+    protected boolean isAutomaticCompletionEditableState() {
+        return automaticCompletion.isEditableState();
     }
 
     protected void handleOnEnterAction(String currentSearchString) {
