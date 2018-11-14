@@ -233,6 +233,9 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
                     @Override
                     public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                         comboBox.updatePopupWidth();
+                        if (comboBox.getItemCount() > 0) {
+                            comboBox.resetScrolling();
+                        }
                     }
 
                     @Override
