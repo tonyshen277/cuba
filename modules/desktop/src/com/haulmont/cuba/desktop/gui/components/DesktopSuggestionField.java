@@ -46,6 +46,9 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_TAB;
+
 public class DesktopSuggestionField extends DesktopAbstractOptionsField<JComponent> implements SuggestionField {
 
     private final Logger log = LoggerFactory.getLogger(DesktopSuggestionField.class);
@@ -60,6 +63,8 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
     protected boolean popupItemSelectionHandling = false;
     protected boolean settingValue;
     protected boolean disableActionListener = false;
+    protected boolean sameValueOnEnterAction = false;
+    protected boolean clearInputOnEnterAction = false;
 
     protected Object nullOption;
 
@@ -109,11 +114,10 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (SearchAutoCompleteSupport.SEARCH_ENTER_COMMAND.equals(e.getActionCommand())) {
-                    enterHandling = true;
+                if (beforeComboEventActionPerformed(e)) {
+                    super.actionPerformed(e);
+                    afterComboBoxEventActionPerformed(e);
                 }
-
-                super.actionPerformed(e);
             }
         };
 
@@ -173,6 +177,7 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
         });
 
         Component editorComponent = comboBox.getEditor().getEditorComponent();
+        editorComponent.setFocusTraversalKeysEnabled(false);
         editorComponent.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -188,10 +193,13 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
             @Override
             public void keyPressed(KeyEvent e) {
                 SwingUtilities.invokeLater(() -> {
-                    if (e.getKeyCode() == KeyEvent.VK_DOWN
-                            && arrowDownActionHandler != null
-                            && !comboBox.isPopupVisible()) {
-                        arrowDownActionHandler.onArrowDownKeyPressed(getComboBoxEditorField().getText());
+                    switch (e.getKeyCode()) {
+                        case VK_DOWN:
+                            onArrowDownKeyEvent(e);
+                            break;
+                        case VK_TAB:
+                            onTabKeyEvent(e);
+                            break;
                     }
                 });
             }
@@ -266,6 +274,49 @@ public class DesktopSuggestionField extends DesktopAbstractOptionsField<JCompone
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         asyncSearchDelayMs = configuration.getConfig(ClientConfig.class).getSuggestionFieldAsyncSearchDelayMs();
+    }
+
+    protected boolean beforeComboEventActionPerformed(ActionEvent event) {
+        if (SearchAutoCompleteSupport.SEARCH_ENTER_COMMAND.equals(event.getActionCommand())) {
+            if (!sameValueOnEnterAction) {
+                if (clearInputOnEnterAction) {
+                    setValue(nullOption);
+                } else {
+                    enterHandling = true;
+                }
+            }
+            sameValueOnEnterAction = false;
+        } else {
+            sameValueOnEnterAction = StringUtils.equals(event.getActionCommand(), getDisplayString(prevValue));
+            clearInputOnEnterAction = StringUtils.isEmpty(event.getActionCommand());
+        }
+        return true;
+    }
+
+    protected void afterComboBoxEventActionPerformed(ActionEvent event) {
+    }
+
+    protected void onArrowDownKeyEvent(KeyEvent event) {
+        if (arrowDownActionHandler != null && !comboBox.isPopupVisible()) {
+            arrowDownActionHandler.onArrowDownKeyPressed(getComboBoxEditorField().getText());
+        }
+    }
+
+    protected void onTabKeyEvent(KeyEvent event) {
+        Component source = event.getComponent();
+        JTextField editor = getComboBoxEditorField();
+        int selected = comboBox.getSelectedIndex();
+        String input = editor.getText();
+
+        if (StringUtils.isNotBlank(input) && selected < 0) {
+            comboBox.actionPerformed(new ActionEvent(event.getSource(), event.getID(), input));
+            comboBox.actionPerformed(new ActionEvent(event.getSource(), event.getID(), SearchAutoCompleteSupport.SEARCH_ENTER_COMMAND));
+            source.transferFocus();
+        } else if (event.isShiftDown()) {
+            source.transferFocusBackward();
+        } else {
+            source.transferFocus();
+        }
     }
 
     protected AutomaticCompletionSupport installAutomaticCompletionSupport() {
