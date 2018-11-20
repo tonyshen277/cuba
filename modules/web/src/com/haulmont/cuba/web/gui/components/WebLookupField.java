@@ -88,19 +88,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         this.component = createComponent();
 
         attachValueChangeListener(component);
-//        setNewOptionAllowed(false);
-
-        component.setItemCaptionGenerator(this::generateItemCaption);
-
-        component.addShortcutListener(
-                new ShortcutListenerDelegate("clearShortcut", KeyCode.DELETE, new int[]{ModifierKey.SHIFT})
-                        .withHandler((sender, target) -> {
-                            if (!isRequired()
-                                    && isEnabledRecursive()
-                                    && isEditableWithParent()) {
-                                setValue(null);
-                            }
-                        }));
     }
 
     protected CubaComboBox<V> createComponent() {
@@ -109,6 +96,8 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
     @Override
     public void afterPropertiesSet() {
+        initComponent(component);
+
         Configuration configuration = beanLocator.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setPageLength(clientConfig.getLookupFieldPageLength());
@@ -116,6 +105,20 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.class);
 
         this.locale = userSessionSource.getLocale();
+    }
+
+    protected void initComponent(CubaComboBox<V> component) {
+        component.setItemCaptionGenerator(this::generateItemCaption);
+
+        component.addShortcutListener(new ShortcutListenerDelegate("clearShortcut",
+                KeyCode.DELETE, new int[]{ModifierKey.SHIFT})
+                        .withHandler((sender, target) -> {
+                            if (!isRequired()
+                                    && isEnabledRecursive()
+                                    && isEditableWithParent()) {
+                                setValue(null);
+                            }
+                        }));
     }
 
     protected String generateDefaultItemCaption(V item) {
@@ -340,15 +343,15 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Override
-    public void setNewOptionHandler(Consumer<String> newItemHandler) {
-        this.newOptionHandler = newItemHandler;
+    public void setNewOptionHandler(Consumer<String> newOptionHandler) {
+        this.newOptionHandler = newOptionHandler;
 
-        if (newItemHandler != null
+        if (newOptionHandler != null
                 && component.getNewItemHandler() == null) {
             component.setNewItemHandler(this::onNewItemEntered);
         }
 
-        if (newItemHandler == null
+        if (newOptionHandler == null
                 && component.getNewItemHandler() != null) {
             component.setNewItemHandler(null);
         }
