@@ -28,10 +28,10 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -88,18 +88,9 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         this.component = createComponent();
 
         attachValueChangeListener(component);
-        setNewOptionAllowed(false);
+//        setNewOptionAllowed(false);
 
         component.setItemCaptionGenerator(this::generateItemCaption);
-
-        /* vaadin8 move to new item handler
-        component.setNewItemHandler(newItemCaption -> {
-            if (newOptionHandler == null) {
-                throw new IllegalStateException("New item handler cannot be NULL");
-            }
-            newOptionHandler.addNewOption(newItemCaption);
-        });
-        */
 
         component.addShortcutListener(
                 new ShortcutListenerDelegate("clearShortcut", KeyCode.DELETE, new int[]{ModifierKey.SHIFT})
@@ -310,15 +301,27 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
     @Override
     public boolean isNewOptionAllowed() {
-        return false;
-//        vaadin8 | the same for the WebLookupPickerField
-//        return component.isNewItemsAllowed();
+        return component.getNewItemHandler() != null;
     }
 
     @Override
     public void setNewOptionAllowed(boolean newItemAllowed) {
-//        vaadin8 | the same for the WebLookupPickerField
-//        component.setNewItemsAllowed(newItemAllowed);
+        if (newItemAllowed
+                && component.getNewItemHandler() == null) {
+            component.setNewItemHandler(this::onNewItemEntered);
+        }
+
+        if (!newItemAllowed
+                && component.getNewItemHandler() != null) {
+            component.setNewItemHandler(null);
+        }
+    }
+
+    protected void onNewItemEntered(String newItemCaption) {
+        if (newOptionHandler == null) {
+            throw new IllegalStateException("New item handler cannot be NULL");
+        }
+        newOptionHandler.accept(newItemCaption);
     }
 
     @Override
@@ -339,6 +342,16 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     @Override
     public void setNewOptionHandler(Consumer<String> newItemHandler) {
         this.newOptionHandler = newItemHandler;
+
+        if (newItemHandler != null
+                && component.getNewItemHandler() == null) {
+            component.setNewItemHandler(this::onNewItemEntered);
+        }
+
+        if (newItemHandler == null
+                && component.getNewItemHandler() != null) {
+            component.setNewItemHandler(null);
+        }
     }
 
     @Override
