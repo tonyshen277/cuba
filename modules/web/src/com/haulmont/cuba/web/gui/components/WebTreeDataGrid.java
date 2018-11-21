@@ -202,8 +202,9 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         }
 
         String hierarchyColumn = element.attributeValue("hierarchyColumn");
-        if (!Strings.isNullOrEmpty(hierarchyColumn)) {
-            component.setHierarchyColumn(hierarchyColumn);
+        if (!Strings.isNullOrEmpty(hierarchyColumn)
+                && getColumn(hierarchyColumn) != null) {
+            setHierarchyColumn(hierarchyColumn);
         }
     }
 
