@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.components.DataGrid.DataGridStaticCellType;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.HasOrientation;
+import com.haulmont.cuba.gui.components.JavaScriptComponent;
+import com.haulmont.cuba.gui.components.JavaScriptComponent.DependencyType;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.gui.components.MouseEventDetails;
 import com.haulmont.cuba.gui.components.PopupButton;
@@ -44,6 +46,7 @@ import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
 import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.shared.ui.grid.ScrollDestination;
+import com.vaadin.ui.Dependency;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
 
@@ -603,6 +606,36 @@ public final class WebWrapperUtils {
                 return Orientation.HORIZONTAL;
             default:
                 throw new IllegalArgumentException("Can't be converted to Orientation: " + orientation);
+        }
+    }
+
+    public static DependencyType toDependencyType(Dependency.Type type) {
+        checkNotNullArgument(type);
+
+        switch (type) {
+            case JAVASCRIPT:
+                return DependencyType.JAVASCRIPT;
+            case STYLESHEET:
+                return DependencyType.STYLESHEET;
+            case HTMLIMPORT:
+                return DependencyType.HTML_IMPORT;
+            default:
+                throw new IllegalArgumentException("Can't be converted to DependencyType: " + type);
+        }
+    }
+
+    public static Dependency.Type toVaadinDependencyType(DependencyType type) {
+        checkNotNullArgument(type);
+
+        switch (type) {
+            case JAVASCRIPT:
+                return Dependency.Type.JAVASCRIPT;
+            case STYLESHEET:
+                return Dependency.Type.STYLESHEET;
+            case HTML_IMPORT:
+                return Dependency.Type.HTMLIMPORT;
+            default:
+                throw new IllegalArgumentException("Can't be converted to Dependency.Type: " + type);
         }
     }
 }
