@@ -128,8 +128,13 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     }
 
     @Override
-    public void setInitializationFunction(String initializingFunction) {
-        component.setInitializationFunction(initializingFunction);
+    public String getInitializationFunctionName() {
+        return component.getInitializingFunctionName();
+    }
+
+    @Override
+    public void setInitializationFunctionName(String initializingFunctionName) {
+        component.setInitializationFunctionName(initializingFunctionName);
     }
 
     @Override

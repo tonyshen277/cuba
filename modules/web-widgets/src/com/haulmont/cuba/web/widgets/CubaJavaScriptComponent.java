@@ -85,13 +85,13 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
         }
     }
 
-    public String getInitializingFunction() {
-        return getState(false).initializingFunction;
+    public String getInitializingFunctionName() {
+        return getState(false).initializingFunctionName;
     }
 
-    public void setInitializationFunction(String initializingFunction) {
-        if (!Objects.equals(getInitializingFunction(), initializingFunction)) {
-            getState().initializingFunction = initializingFunction;
+    public void setInitializationFunctionName(String initializingFunction) {
+        if (!Objects.equals(getInitializingFunctionName(), initializingFunction)) {
+            getState().initializingFunctionName = initializingFunction;
         }
     }
 

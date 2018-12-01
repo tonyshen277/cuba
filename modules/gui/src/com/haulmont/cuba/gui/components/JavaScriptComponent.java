@@ -36,7 +36,9 @@ public interface JavaScriptComponent extends Component {
 
     void setDependencies(DependencyType type, List<String> dependencies);
 
-    void setInitializationFunction(String initializingFunction);
+    String getInitializationFunctionName();
+
+    void setInitializationFunctionName(String initializingFunction);
 
     Object getState();
 

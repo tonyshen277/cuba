@@ -20,7 +20,7 @@ import com.vaadin.shared.ui.JavaScriptComponentState;
 
 public class CubaJavaScriptComponentState extends JavaScriptComponentState {
 
-    public String initializingFunction;
+    public String initializingFunctionName;
 
     public String data;
 
