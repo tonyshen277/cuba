@@ -16,19 +16,55 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.haulmont.cuba.gui.components.JavaScriptComponent;
+import com.haulmont.cuba.web.gui.components.serialization.DateJsonSerializer;
 import com.haulmont.cuba.web.widgets.CubaJavaScriptComponent;
 import com.vaadin.ui.Dependency;
 import com.vaadin.ui.JavaScriptFunction;
 
 import javax.annotation.Nullable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptComponent>
         implements JavaScriptComponent {
+
+    protected final static Gson sharedGson;
+
+    static {
+        // GSON is thread safe so we can use shared GSON instance
+        sharedGson = createSharedGsonBuilder().create();
+    }
+
+    private static GsonBuilder createSharedGsonBuilder() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                Expose expose = f.getAnnotation(Expose.class);
+                return expose != null && !expose.serialize();
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        });
+
+        setDefaultProperties(builder);
+        return builder;
+    }
+
+    protected static void setDefaultProperties(GsonBuilder builder) {
+        builder.registerTypeHierarchyAdapter(Date.class, new DateJsonSerializer());
+    }
 
     protected Gson gson;
 
@@ -97,13 +133,19 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     }
 
     @Override
-    public Map<String, Object> getState() {
-        return component.getStateObject();
+    public Object getState() {
+        return getState(Object.class);
     }
 
     @Override
-    public void setState(Map<String, Object> state) {
-        component.setStateObject(state);
+    public <T> T getState(Class<T> type) {
+        return fromJson(component.getStateData(), type);
+    }
+
+    @Override
+    public void setState(Object state) {
+        String json = getStateSerializer().toJson(state);
+        component.setStateData(json);
     }
 
     @Override
@@ -115,16 +157,22 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
         });
     }
 
-    protected <T> T fromJson(String json, Class<T> type) {
-        if (gson == null) {
-            gson = new Gson();
-        }
-
-        return gson.fromJson(json, type);
-    }
-
     @Override
     public void callFunction(String name, Object... arguments) {
         component.callFunction(name, arguments);
+    }
+
+    @Override
+    public Gson getStateSerializer() {
+        return gson != null ? gson : sharedGson;
+    }
+
+    @Override
+    public void setStateSerializer(Gson gson) {
+        this.gson = gson;
+    }
+
+    protected <T> T fromJson(String json, Class<T> type) {
+        return getStateSerializer().fromJson(json, type);
     }
 }

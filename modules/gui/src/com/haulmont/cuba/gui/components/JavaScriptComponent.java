@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.gson.Gson;
+
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +38,19 @@ public interface JavaScriptComponent extends Component {
 
     void setInitializationFunction(String initializingFunction);
 
-    Map<String, Object> getState();
+    Object getState();
 
-    void setState(Map<String, Object> state);
+    <T> T getState(Class<T> type);
+
+    void setState(Object state);
 
     void addFunction(String name, JavaScriptCallbackFunction function);
 
     void callFunction(String name, Object... arguments);
+
+    Gson getStateSerializer();
+
+    void setStateSerializer(Gson gson);
 
     class JavaScriptCallbackEvent extends EventObject {
 

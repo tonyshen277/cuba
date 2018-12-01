@@ -18,12 +18,10 @@ package com.haulmont.cuba.web.widgets.client.javascriptcomponent;
 
 import com.vaadin.shared.ui.JavaScriptComponentState;
 
-import java.util.Map;
-
 public class CubaJavaScriptComponentState extends JavaScriptComponentState {
 
     public String initializingFunction;
 
-    public Map<String, Object> data;
+    public String data;
 
 }

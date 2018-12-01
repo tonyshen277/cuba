@@ -95,12 +95,12 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
         }
     }
 
-    public Map<String, Object> getStateObject() {
+    public String getStateData() {
         return getState(false).data;
     }
 
-    public void setStateObject(Map<String, Object> state) {
-        getState().data = state;
+    public void setStateData(String data) {
+        getState().data = data;
     }
 
     @Override
