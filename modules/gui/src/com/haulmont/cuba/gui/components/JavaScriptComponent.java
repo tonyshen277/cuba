@@ -19,21 +19,20 @@ package com.haulmont.cuba.gui.components;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface JavaScriptComponent extends Component {
 
     String NAME = "javaScriptComponent";
 
-    Map<DependencyType, Set<String>> getDependencies();
+    Map<DependencyType, List<String>> getDependencies();
 
-    Set<String> getDependencies(DependencyType type);
+    List<String> getDependencies(DependencyType type);
 
-    void setDependencies(Map<DependencyType, Set<String>> dependencies);
+    void setDependencies(Map<DependencyType, List<String>> dependencies);
 
     void setDependencies(DependencyType type, String... dependencies);
 
-    void setDependencies(DependencyType type, Set<String> dependencies);
+    void setDependencies(DependencyType type, List<String> dependencies);
 
     void setInitializationFunction(String initializingFunction);
 

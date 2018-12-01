@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptComponent>
         implements JavaScriptComponent {
@@ -47,15 +46,15 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
 
     @Nullable
     @Override
-    public Map<DependencyType, Set<String>> getDependencies() {
-        Map<Dependency.Type, Set<String>> dependencies = component.getDependencies();
+    public Map<DependencyType, List<String>> getDependencies() {
+        Map<Dependency.Type, List<String>> dependencies = component.getDependencies();
         if (dependencies == null) {
             return null;
         }
 
-        Map<DependencyType, Set<String>> dependenciesToReturn = new HashMap<>();
+        Map<DependencyType, List<String>> dependenciesToReturn = new HashMap<>();
 
-        for (Map.Entry<Dependency.Type, Set<String>> entry : dependencies.entrySet()) {
+        for (Map.Entry<Dependency.Type, List<String>> entry : dependencies.entrySet()) {
             dependenciesToReturn.put(WebWrapperUtils.toDependencyType(entry.getKey()), entry.getValue());
         }
 
@@ -63,17 +62,17 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     }
 
     @Override
-    public Set<String> getDependencies(DependencyType type) {
+    public List<String> getDependencies(DependencyType type) {
         return component.getDependencies(WebWrapperUtils.toVaadinDependencyType(type));
     }
 
     @Override
-    public void setDependencies(Map<DependencyType, Set<String>> dependencies) {
+    public void setDependencies(Map<DependencyType, List<String>> dependencies) {
         if (dependencies != null) {
 
-            Map<Dependency.Type, Set<String>> dependenciesToSet = new HashMap<>();
+            Map<Dependency.Type, List<String>> dependenciesToSet = new HashMap<>();
 
-            for (Map.Entry<DependencyType, Set<String>> entry : dependencies.entrySet()) {
+            for (Map.Entry<DependencyType, List<String>> entry : dependencies.entrySet()) {
                 dependenciesToSet.put(WebWrapperUtils.toVaadinDependencyType(entry.getKey()), entry.getValue());
             }
             component.setDependencies(dependenciesToSet);
@@ -88,7 +87,7 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     }
 
     @Override
-    public void setDependencies(DependencyType type, Set<String> dependencies) {
+    public void setDependencies(DependencyType type, List<String> dependencies) {
         component.setDependencies(WebWrapperUtils.toVaadinDependencyType(type), dependencies);
     }
 

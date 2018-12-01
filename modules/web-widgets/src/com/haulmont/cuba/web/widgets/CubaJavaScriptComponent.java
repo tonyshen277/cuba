@@ -17,27 +17,23 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.javascriptcomponent.CubaJavaScriptComponentState;
-import com.vaadin.server.LegacyCommunicationManager;
-import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractJavaScriptComponent;
-import com.vaadin.ui.Dependency;
 import com.vaadin.ui.Dependency.Type;
+import com.vaadin.ui.HasDependencies;
 import com.vaadin.ui.JavaScriptFunction;
-import com.vaadin.ui.UI;
-import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
-public class CubaJavaScriptComponent extends AbstractJavaScriptComponent {
+public class CubaJavaScriptComponent extends AbstractJavaScriptComponent implements HasDependencies {
 
-    protected Map<Type, Set<String>> dependencies;
+    protected Map<Type, List<String>> dependencies;
 
     @Override
     protected CubaJavaScriptComponentState getState() {
@@ -50,33 +46,34 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent {
     }
 
     @Nullable
-    public Map<Type, Set<String>> getDependencies() {
+    @Override
+    public Map<Type, List<String>> getDependencies() {
         return dependencies;
     }
 
-    public Set<String> getDependencies(Type type) {
+    public List<String> getDependencies(Type type) {
         if (dependencies == null) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
 
         return nullToEmpty(dependencies.get(type));
     }
 
-    protected Set<String> nullToEmpty(Set<String> dependencies) {
-        return dependencies == null ? Collections.emptySet() : dependencies;
+    protected List<String> nullToEmpty(List<String> dependencies) {
+        return dependencies == null ? Collections.emptyList() : dependencies;
     }
 
-    public void setDependencies(Map<Type, Set<String>> dependencies) {
+    public void setDependencies(Map<Type, List<String>> dependencies) {
         this.dependencies = dependencies;
     }
 
     public void setDependencies(Type type, String... dependencies) {
         setDependencies(type, dependencies != null
-                ? new HashSet<>(Arrays.asList(dependencies))
+                ? new ArrayList<>(Arrays.asList(dependencies))
                 : null);
     }
 
-    public void setDependencies(Type type, Set<String> dependencies) {
+    public void setDependencies(Type type, List<String> dependencies) {
         if (this.dependencies == null) {
             this.dependencies = new HashMap<>();
         }
@@ -85,35 +82,6 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent {
             this.dependencies.put(type, dependencies);
         } else {
             this.dependencies.remove(type);
-        }
-    }
-
-    protected void updateDependencies() {
-        if (dependencies == null) {
-            return;
-        }
-
-        UI ui = getUI();
-        Page page = ui.getPage();
-        LegacyCommunicationManager manager = ui.getSession().getCommunicationManager();
-
-        for (Map.Entry<Dependency.Type, Set<String>> entry : dependencies.entrySet()) {
-            Set<String> dependenciesList = entry.getValue();
-            if (CollectionUtils.isNotEmpty(dependenciesList)) {
-                for (String dependency : dependenciesList) {
-                    String url = manager.registerDependency(dependency, getClass());
-                    page.addDependency(new Dependency(entry.getKey(), url));
-                }
-            }
-        }
-    }
-
-    @Override
-    public void beforeClientResponse(boolean initial) {
-        super.beforeClientResponse(initial);
-
-        if (initial) {
-            updateDependencies();
         }
     }
 

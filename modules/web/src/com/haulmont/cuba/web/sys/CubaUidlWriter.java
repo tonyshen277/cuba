@@ -23,6 +23,7 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
 import com.vaadin.server.communication.UidlWriter;
 import com.vaadin.ui.Dependency;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +46,8 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
     protected static final Pattern WEB_JAR_PROPERTY_DEFAULT_VALUE_PATTERN = Pattern.compile("\\?:");
+
+    protected static final String WEB_JAR_PREFIX = "webjar://";
 
     protected final ServletContext servletContext;
 
@@ -75,6 +79,28 @@ public class CubaUidlWriter extends UidlWriter {
                 if (resourcePath.endsWith(CSS_EXTENSION)) {
                     String url = manager.registerDependency(resourcePath, connectorClass);
                     dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void handleAdditionalDependencies(Map<Dependency.Type, List<String>> dependencyMap,
+                                                LegacyCommunicationManager manager, List<Dependency> dependencies) {
+        for (Map.Entry<Dependency.Type, List<String>> entry : dependencyMap.entrySet()) {
+            List<String> dependenciesList = entry.getValue();
+            if (CollectionUtils.isNotEmpty(dependenciesList)) {
+                for (String dependency : dependenciesList) {
+                    String resourcePath;
+                    if (dependency.startsWith(WEB_JAR_PREFIX)) {
+                        String resourceUri = processResourceUri(dependency.replace(WEB_JAR_PREFIX, ""));
+                        resourcePath = getResourceActualPath(resourceUri, "");
+                    } else {
+                        resourcePath = dependency;
+                    }
+
+                    String url = manager.registerDependency(resourcePath, getClass());
+                    dependencies.add(new Dependency(entry.getKey(), url));
                 }
             }
         }
