@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptComponent>
         implements JavaScriptComponent {
@@ -154,11 +155,11 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     }
 
     @Override
-    public void addFunction(String name, JavaScriptCallbackFunction function) {
+    public void addFunction(String name, Consumer<JavaScriptCallbackEvent> function) {
         component.addFunction(name, (JavaScriptFunction) arguments -> {
             List list = fromJson(arguments.toJson(), List.class);
             JavaScriptCallbackEvent event = new JavaScriptCallbackEvent(this, list);
-            function.onCall(event);
+            function.accept(event);
         });
     }
 

@@ -88,8 +88,4 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
 
         component.setDependencies(allDependencies);
     }
-
-    protected void loadDependency(JavaScriptComponent component, Element element) {
-
-    }
 }
