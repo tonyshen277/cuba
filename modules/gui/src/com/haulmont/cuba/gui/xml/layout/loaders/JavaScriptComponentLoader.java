@@ -53,6 +53,7 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadIcon(resultComponent, element);
+        loadContextHelp(resultComponent, element);
 
         loadInitializationFunctionName(resultComponent, element);
         loadDependencies(resultComponent, element);

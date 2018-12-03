@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * A JavaScript wrapper
  */
 public interface JavaScriptComponent extends Component,
-        Component.HasCaption, Component.HasDescription, Component.HasIcon {
+        Component.HasCaption, Component.HasDescription, Component.HasIcon, HasContextHelp {
 
     String NAME = "javaScriptComponent";
 

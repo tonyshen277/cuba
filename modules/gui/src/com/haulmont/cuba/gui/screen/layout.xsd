@@ -2857,6 +2857,8 @@
                 </xs:all>
 
                 <xs:attribute name="initializingFunctionName" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasContextHelp"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
