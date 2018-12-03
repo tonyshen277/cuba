@@ -43,6 +43,13 @@ public interface JavaScriptComponent extends Component {
 
     /**
      * Sets a map of dependencies by type.
+     * Each dependency represented with a string and corresponds to one of the sources:
+     *
+     * <ul>
+     * <li>classpath (default)</li>
+     * <li>webjar://</li>
+     * <li>vaadin://</li>
+     * </ul>
      *
      * @param dependencies dependencies to set
      */
@@ -50,6 +57,13 @@ public interface JavaScriptComponent extends Component {
 
     /**
      * Sets dependencies for the given type.
+     * Each dependency represented with a string and corresponds to one of the sources:
+     *
+     * <ul>
+     * <li>classpath (default)</li>
+     * <li>webjar://</li>
+     * <li>vaadin://</li>
+     * </ul>
      *
      * @param type         the type for which dependencies are set
      * @param dependencies dependencies to set
@@ -58,6 +72,13 @@ public interface JavaScriptComponent extends Component {
 
     /**
      * Sets dependencies for the given type.
+     * Each dependency represented with a string and corresponds to one of the sources:
+     *
+     * <ul>
+     * <li>classpath (default)</li>
+     * <li>webjar://</li>
+     * <li>vaadin://</li>
+     * </ul>
      *
      * @param type         the type for which dependencies are set
      * @param dependencies dependencies to set
