@@ -50,6 +50,10 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 
+        loadCaption(resultComponent, element);
+        loadDescription(resultComponent, element);
+        loadIcon(resultComponent, element);
+
         loadInitializationFunctionName(resultComponent, element);
         loadDependencies(resultComponent, element);
     }
