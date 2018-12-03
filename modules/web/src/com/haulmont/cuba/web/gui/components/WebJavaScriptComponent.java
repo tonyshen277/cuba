@@ -27,7 +27,7 @@ import com.haulmont.cuba.web.widgets.CubaJavaScriptComponent;
 import com.vaadin.ui.Dependency;
 import com.vaadin.ui.JavaScriptFunction;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +44,7 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
         sharedGson = createSharedGsonBuilder().create();
     }
 
-    private static GsonBuilder createSharedGsonBuilder() {
+    protected static GsonBuilder createSharedGsonBuilder() {
         GsonBuilder builder = new GsonBuilder();
         builder.setExclusionStrategies(new ExclusionStrategy() {
             @Override
@@ -81,16 +81,14 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
     protected void initComponent(CubaJavaScriptComponent component) {
     }
 
-    @Nullable
     @Override
     public Map<DependencyType, List<String>> getDependencies() {
         Map<Dependency.Type, List<String>> dependencies = component.getDependencies();
-        if (dependencies == null) {
-            return null;
+        if (dependencies.isEmpty()) {
+            return Collections.emptyMap();
         }
 
         Map<DependencyType, List<String>> dependenciesToReturn = new HashMap<>();
-
         for (Map.Entry<Dependency.Type, List<String>> entry : dependencies.entrySet()) {
             dependenciesToReturn.put(WebWrapperUtils.toDependencyType(entry.getKey()), entry.getValue());
         }

@@ -617,8 +617,6 @@ public final class WebWrapperUtils {
                 return DependencyType.JAVASCRIPT;
             case STYLESHEET:
                 return DependencyType.STYLESHEET;
-            case HTMLIMPORT:
-                return DependencyType.HTML_IMPORT;
             default:
                 throw new IllegalArgumentException("Can't be converted to DependencyType: " + type);
         }
@@ -632,8 +630,6 @@ public final class WebWrapperUtils {
                 return Dependency.Type.JAVASCRIPT;
             case STYLESHEET:
                 return Dependency.Type.STYLESHEET;
-            case HTML_IMPORT:
-                return Dependency.Type.HTMLIMPORT;
             default:
                 throw new IllegalArgumentException("Can't be converted to Dependency.Type: " + type);
         }

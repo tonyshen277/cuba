@@ -22,7 +22,6 @@ import com.vaadin.ui.Dependency.Type;
 import com.vaadin.ui.HasDependencies;
 import com.vaadin.ui.JavaScriptFunction;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,10 +44,9 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
         return (CubaJavaScriptComponentState) super.getState(markAsDirty);
     }
 
-    @Nullable
     @Override
     public Map<Type, List<String>> getDependencies() {
-        return dependencies;
+        return dependencies != null ? dependencies : Collections.emptyMap();
     }
 
     public List<String> getDependencies(Type type) {

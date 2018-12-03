@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.JavaScriptComponent;
 import com.haulmont.cuba.gui.components.JavaScriptComponent.DependencyType;
 import org.dom4j.Element;
@@ -27,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScriptComponent> {
+
+    protected static final String JAVASCRIPT_EXTENSION = ".js";
+    protected static final String CSS_EXTENSION = ".css";
 
     @Override
     public void createComponent() {
@@ -74,23 +78,35 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
 
         Map<DependencyType, List<String>> allDependencies = new HashMap<>();
         for (Element dependency : dependenciesElement.elements("dependency")) {
-            String type = dependency.attributeValue("type");
-            if (!Strings.isNullOrEmpty(type)) {
-                DependencyType dependencyType = DependencyType.valueOf(type);
+            String path = dependency.attributeValue("path");
+            if (!Strings.isNullOrEmpty(path)) {
+                String type = dependency.attributeValue("type");
+                DependencyType dependencyType = Strings.isNullOrEmpty(type)
+                        ? resolveTypeFromPath(path)
+                        : DependencyType.valueOf(type);
 
-                String path = dependency.attributeValue("path");
-                if (!Strings.isNullOrEmpty(path)) {
-                    List<String> paths = allDependencies.get(dependencyType);
-                    if (paths == null) {
-                        paths = new ArrayList<>();
-                    }
-                    paths.add(path);
-
-                    allDependencies.put(dependencyType, paths);
+                List<String> paths = allDependencies.get(dependencyType);
+                if (paths == null) {
+                    paths = new ArrayList<>();
                 }
+                paths.add(path);
+
+                allDependencies.put(dependencyType, paths);
             }
         }
 
         component.setDependencies(allDependencies);
+    }
+
+    protected DependencyType resolveTypeFromPath(String path) {
+        if (path.endsWith(JAVASCRIPT_EXTENSION)) {
+            return DependencyType.JAVASCRIPT;
+        }
+        if (path.endsWith(CSS_EXTENSION)) {
+            return DependencyType.STYLESHEET;
+        }
+
+        throw new GuiDevelopmentException("Can't resolve dependency type for path: " + path,
+                context.getFullFrameId());
     }
 }

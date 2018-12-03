@@ -208,8 +208,6 @@ public interface JavaScriptComponent extends Component,
      */
     enum DependencyType {
         STYLESHEET,
-        JAVASCRIPT,
-        HTML_IMPORT
+        JAVASCRIPT
     }
-
 }

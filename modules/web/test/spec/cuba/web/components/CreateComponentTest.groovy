@@ -116,7 +116,9 @@ class CreateComponentTest extends WebSpec {
                 TimeZoneIndicator.NAME,
                 SideMenu.NAME,
 
-                Timer.NAME
+                Timer.NAME,
+
+                JavaScriptComponent.NAME
         ]
     }
 }
