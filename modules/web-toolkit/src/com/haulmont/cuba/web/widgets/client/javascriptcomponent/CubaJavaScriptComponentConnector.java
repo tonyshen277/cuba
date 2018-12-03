@@ -38,7 +38,7 @@ public class CubaJavaScriptComponentConnector extends JavaScriptComponentConnect
 
             @Override
             protected List<String> getPotentialInitFunctionNames() {
-                return Collections.singletonList(getState().initializingFunctionName);
+                return Collections.singletonList(getState().initFunctionName);
             }
         };
     }

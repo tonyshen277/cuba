@@ -90,15 +90,15 @@ public interface JavaScriptComponent extends Component,
      * @return an initialization function name that will be
      * used to find an entry point for the JS component connector
      */
-    String getInitializationFunctionName();
+    String getInitFunctionName();
 
     /**
      * Sets an initialization function name that will be
      * used to find an entry point for the JS component connector.
      *
-     * @param initializingFunction an initialization function name
+     * @param initFunctionName an initialization function name
      */
-    void setInitializationFunctionName(String initializingFunction);
+    void setInitFunctionName(String initFunctionName);
 
     /**
      * @return Returns a state object

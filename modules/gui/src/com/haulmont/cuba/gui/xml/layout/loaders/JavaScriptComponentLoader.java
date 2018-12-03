@@ -60,7 +60,7 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         loadContextHelp(resultComponent, element);
 
         loadRequiredIndicatorVisible(resultComponent, element);
-        loadInitializationFunctionName(resultComponent, element);
+        loadInitFunctionName(resultComponent, element);
         loadDependencies(resultComponent, element);
     }
 
@@ -71,10 +71,10 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         }
     }
 
-    protected void loadInitializationFunctionName(JavaScriptComponent component, Element element) {
-        String initializingFunctionName = element.attributeValue("initializingFunctionName");
-        if (!Strings.isNullOrEmpty(initializingFunctionName)) {
-            component.setInitializationFunctionName(initializingFunctionName);
+    protected void loadInitFunctionName(JavaScriptComponent component, Element element) {
+        String initFunctionName = element.attributeValue("initFunctionName");
+        if (!Strings.isNullOrEmpty(initFunctionName)) {
+            component.setInitFunctionName(initFunctionName);
         }
     }
 

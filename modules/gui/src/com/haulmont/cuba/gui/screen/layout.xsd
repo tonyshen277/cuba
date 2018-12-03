@@ -2856,7 +2856,7 @@
                     <xs:element name="dependencies" minOccurs="0" type="dependencies"/>
                 </xs:all>
 
-                <xs:attribute name="initializingFunctionName" type="xs:string"/>
+                <xs:attribute name="initFunctionName" type="xs:string"/>
                 <xs:attribute name="requiredIndicatorVisible" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasContextHelp"/>
