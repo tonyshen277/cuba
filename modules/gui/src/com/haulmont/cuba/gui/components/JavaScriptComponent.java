@@ -173,6 +173,19 @@ public interface JavaScriptComponent extends Component,
     void setStateSerializer(Gson gson);
 
     /**
+     * @return whether the required indicator is visible
+     */
+    boolean isRequiredIndicatorVisible();
+
+    /**
+     * Sets whether the required indicator is visible.
+     *
+     * @param visible {@code true} to make the required indicator visible,
+     *                {@code false} otherwise
+     */
+    void setRequiredIndicatorVisible(boolean visible);
+
+    /**
      * An event that is fired when a method is called by a client-side JavaScript function.
      */
     class JavaScriptCallbackEvent extends EventObject {

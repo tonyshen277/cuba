@@ -176,6 +176,16 @@ public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptC
         this.gson = gson;
     }
 
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
+
     protected <T> T fromJson(String json, Class<T> type) {
         return getStateSerializer().fromJson(json, type);
     }

@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.widgets.client.javascriptcomponent;
 
 import com.haulmont.cuba.web.widgets.CubaJavaScriptComponent;
 import com.vaadin.client.JavaScriptConnectorHelper;
+import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.client.ui.JavaScriptComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -25,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Connect(CubaJavaScriptComponent.class)
-public class CubaJavaScriptComponentConnector extends JavaScriptComponentConnector {
+public class CubaJavaScriptComponentConnector extends JavaScriptComponentConnector implements HasRequiredIndicator {
 
     @Override
     protected JavaScriptConnectorHelper createJavaScriptConnectorHelper() {
@@ -45,5 +46,10 @@ public class CubaJavaScriptComponentConnector extends JavaScriptComponentConnect
     @Override
     public CubaJavaScriptComponentState getState() {
         return (CubaJavaScriptComponentState) super.getState();
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
     }
 }

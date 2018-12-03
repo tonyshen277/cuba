@@ -24,4 +24,5 @@ public class CubaJavaScriptComponentState extends JavaScriptComponentState {
 
     public String data;
 
+    public boolean requiredIndicatorVisible = false;
 }

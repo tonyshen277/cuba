@@ -110,4 +110,16 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
     public void callFunction(String name, Object... arguments) {
         super.callFunction(name, arguments);
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        if (getState(false).requiredIndicatorVisible != visible) {
+            getState().requiredIndicatorVisible = visible;
+        }
+    }
 }
