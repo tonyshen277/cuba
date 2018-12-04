@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.gson.annotations.Expose;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasContextHelp;
 import elemental.json.JsonArray;
@@ -27,7 +28,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * A JavaScript wrapper
+ * A JavaScript wrapper.
+ *
+ * @param <T> type of the state object
  */
 public interface JavaScriptComponent<T> extends Component,
         Component.HasCaption, Component.HasDescription, Component.HasIcon, HasContextHelp {
@@ -99,6 +102,8 @@ public interface JavaScriptComponent<T> extends Component,
      * Sets an initialization function name that will be
      * used to find an entry point for the JS component connector.
      *
+     * CAUTION: the initialization function name must be unique within window.
+     *
      * @param initFunctionName an initialization function name
      */
     void setInitFunctionName(String initFunctionName);
@@ -121,6 +126,11 @@ public interface JavaScriptComponent<T> extends Component,
      *    ...
      * }
      * }</pre>
+     * <p>
+     * The state object should be a POJO.
+     * <p>
+     * CAUTION: {@link java.util.Date} fields serialized as strings
+     * with {@link com.haulmont.cuba.web.widgets.serialization.DateJsonSerializer#DATE_FORMAT} format.
      *
      * @param state a state object to set
      */
@@ -165,6 +175,11 @@ public interface JavaScriptComponent<T> extends Component,
      *                {@code false} otherwise
      */
     void setRequiredIndicatorVisible(boolean visible);
+
+    /**
+     * Repaint UI representation of the component.
+     */
+    void repaint();
 
     /**
      * An event that is fired when a method is called by a client-side JavaScript function.

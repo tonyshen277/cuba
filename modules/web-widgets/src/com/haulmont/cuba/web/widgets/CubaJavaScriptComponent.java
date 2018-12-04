@@ -190,7 +190,7 @@ public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent impl
         this.gson = serializer;
     }
 
-    protected void forceStateChange() {
+    public void forceStateChange() {
         this.dirty = true;
         markAsDirty();
     }

@@ -3076,7 +3076,7 @@
 
                 <xs:element name="capsLockIndicator" type="capsLockIndicatorComponent"/>
 
-                <xs:element name="javaScriptComponent" type="javaScriptComponent"/>
+                <xs:element name="jsComponent" type="javaScriptComponent"/>
 
                 <!-- Main window -->
 

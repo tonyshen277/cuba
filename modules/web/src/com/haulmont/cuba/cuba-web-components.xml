@@ -16,7 +16,7 @@
 
 <components xmlns="http://schemas.haulmont.com/cuba/components.xsd">
     <component>
-        <tag>javaScriptComponent</tag>
+        <tag>jsComponent</tag>
         <name>javaScriptComponent</name>
         <class>com.haulmont.cuba.web.gui.components.WebJavaScriptComponent</class>
         <componentLoader>com.haulmont.cuba.web.gui.xml.layout.loaders.JavaScriptComponentLoader</componentLoader>

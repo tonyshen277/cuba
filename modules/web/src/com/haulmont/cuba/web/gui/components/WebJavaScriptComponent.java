@@ -128,4 +128,9 @@ public class WebJavaScriptComponent<T> extends WebAbstractComponent<CubaJavaScri
     public void setRequiredIndicatorVisible(boolean visible) {
         component.setRequiredIndicatorVisible(visible);
     }
+
+    @Override
+    public void repaint() {
+        component.forceStateChange();
+    }
 }

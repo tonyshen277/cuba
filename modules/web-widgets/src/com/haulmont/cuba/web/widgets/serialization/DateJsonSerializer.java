@@ -23,28 +23,27 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateJsonSerializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
-    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:S";
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:S";
+    public static final FastDateFormat DATE_FORMATTER = FastDateFormat.getInstance(DATE_FORMAT);
 
     @Override
     public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-        return new JsonPrimitive(dateFormat.format(src));
+        return new JsonPrimitive(DATE_FORMATTER.format(src));
     }
 
     @Override
     public Date deserialize(JsonElement json, Type typeOfT,
                             JsonDeserializationContext context) throws JsonParseException {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-            return dateFormat.parse(json.getAsString());
+            return DATE_FORMATTER.parse(json.getAsString());
         } catch (ParseException e) {
             throw new JsonParseException(e);
         }
