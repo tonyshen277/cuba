@@ -88,20 +88,23 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         Map<DependencyType, List<String>> allDependencies = new HashMap<>();
         for (Element dependency : dependenciesElement.elements("dependency")) {
             String path = dependency.attributeValue("path");
-            if (!Strings.isNullOrEmpty(path)) {
-                String type = dependency.attributeValue("type");
-                DependencyType dependencyType = Strings.isNullOrEmpty(type)
-                        ? resolveTypeFromPath(path)
-                        : DependencyType.valueOf(type);
-
-                List<String> paths = allDependencies.get(dependencyType);
-                if (paths == null) {
-                    paths = new ArrayList<>();
-                }
-                paths.add(path);
-
-                allDependencies.put(dependencyType, paths);
+            if (Strings.isNullOrEmpty(path)) {
+                throw new GuiDevelopmentException("No path provided for a JavaScriptComponent dependency",
+                        context.getFullFrameId());
             }
+
+            String type = dependency.attributeValue("type");
+            DependencyType dependencyType = Strings.isNullOrEmpty(type)
+                    ? resolveTypeFromPath(path)
+                    : DependencyType.valueOf(type);
+
+            List<String> paths = allDependencies.get(dependencyType);
+            if (paths == null) {
+                paths = new ArrayList<>();
+            }
+            paths.add(path);
+
+            allDependencies.put(dependencyType, paths);
         }
 
         component.setDependencies(allDependencies);
