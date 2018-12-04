@@ -207,24 +207,10 @@ public class CubaVaadinServletService extends VaadinServletService
 
     // Add ability to load JS and CSS resources from VAADIN directory
     protected static class CubaPublishedFileHandler extends PublishedFileHandler {
-
-        protected Resources resources;
-
-        public CubaPublishedFileHandler() {
-            this.resources = AppBeans.get(Resources.NAME);
-        }
-
         @Override
         protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
             ServletContext servletContext = VaadinServlet.getCurrent().getServletContext();
-            InputStream resourceAsStream = servletContext.getResourceAsStream("/VAADIN/" + fileName);
-
-            // If no resource found in VAADIN directory, try to find in the classpath
-            if (resourceAsStream == null) {
-                return resources.getResourceAsStream(fileName);
-            }
-
-            return resourceAsStream;
+            return servletContext.getResourceAsStream("/VAADIN/" + fileName);
         }
     }
 
