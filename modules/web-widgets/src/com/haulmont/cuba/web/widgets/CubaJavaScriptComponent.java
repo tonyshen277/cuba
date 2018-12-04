@@ -16,23 +16,65 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.haulmont.cuba.web.widgets.client.javascriptcomponent.CubaJavaScriptComponentState;
+import com.haulmont.cuba.web.widgets.serialization.DateJsonSerializer;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.Dependency.Type;
 import com.vaadin.ui.HasDependencies;
 import com.vaadin.ui.JavaScriptFunction;
+import elemental.json.Json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class CubaJavaScriptComponent extends AbstractJavaScriptComponent implements HasDependencies {
+public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent implements HasDependencies {
+
+    protected final static Gson sharedGson;
+
+    static {
+        // GSON is thread safe so we can use shared GSON instance
+        sharedGson = createSharedGsonBuilder().create();
+    }
+
+    protected static GsonBuilder createSharedGsonBuilder() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                Expose expose = f.getAnnotation(Expose.class);
+                return expose != null && !expose.serialize();
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        });
+
+        setDefaultProperties(builder);
+        return builder;
+    }
+
+    protected static void setDefaultProperties(GsonBuilder builder) {
+        builder.registerTypeHierarchyAdapter(Date.class, new DateJsonSerializer());
+    }
 
     protected Map<Type, List<String>> dependencies;
+    protected T stateData;
+
+    protected Gson gson;
+    protected boolean dirty = false;
 
     @Override
     protected CubaJavaScriptComponentState getState() {
@@ -93,12 +135,13 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
         }
     }
 
-    public String getStateData() {
-        return getState(false).data;
+    public T getStateData() {
+        return stateData;
     }
 
-    public void setStateData(String data) {
-        getState().data = data;
+    public void setStateData(T data) {
+        this.stateData = data;
+        forceStateChange();
     }
 
     @Override
@@ -121,5 +164,34 @@ public class CubaJavaScriptComponent extends AbstractJavaScriptComponent impleme
         if (getState(false).requiredIndicatorVisible != visible) {
             getState().requiredIndicatorVisible = visible;
         }
+    }
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (initial || dirty) {
+            if (stateData != null) {
+                String json = getStateSerializer().toJson(stateData);
+                getState().data = Json.parse(json);
+            } else {
+                getState().data = null;
+            }
+
+            dirty = false;
+        }
+    }
+
+    public Gson getStateSerializer() {
+        return gson != null ? gson : sharedGson;
+    }
+
+    public void setStateSerializer(Gson serializer) {
+        this.gson = serializer;
+    }
+
+    protected void forceStateChange() {
+        this.dirty = true;
+        markAsDirty();
     }
 }

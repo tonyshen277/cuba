@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.xml.layout.loaders;
+package com.haulmont.cuba.web.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.JavaScriptComponent;
-import com.haulmont.cuba.gui.components.JavaScriptComponent.DependencyType;
+import com.haulmont.cuba.gui.xml.layout.loaders.AbstractComponentLoader;
+import com.haulmont.cuba.web.gui.components.JavaScriptComponent;
+import com.haulmont.cuba.web.gui.components.JavaScriptComponent.DependencyType;
 import org.dom4j.Element;
 
 import java.util.ArrayList;

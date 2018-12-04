@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.web.gui.components;
 
-import com.google.gson.Gson;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasContextHelp;
+import elemental.json.JsonArray;
+import elemental.json.JsonValue;
 
 import java.util.EventObject;
 import java.util.List;
@@ -26,7 +29,7 @@ import java.util.function.Consumer;
 /**
  * A JavaScript wrapper
  */
-public interface JavaScriptComponent extends Component,
+public interface JavaScriptComponent<T> extends Component,
         Component.HasCaption, Component.HasDescription, Component.HasIcon, HasContextHelp {
 
     String NAME = "javaScriptComponent";
@@ -103,34 +106,25 @@ public interface JavaScriptComponent extends Component,
     /**
      * @return Returns a state object
      */
-    Object getState();
-
-    /**
-     * Returns a state object with the given type.
-     *
-     * @param type the class of T
-     * @param <T>  the type of the state object
-     * @return a state object with the given type
-     */
-    <T> T getState(Class<T> type);
+    T getState();
 
     /**
      * Sets a state object that can be used in the client-side JS connector
      * and accessible from the {@code data} field of the component's state.
      * <p>
-     * Here an example of accessing the state object and its parsing from JSON string:
+     * Here an example of accessing the state object:
      *
      * <pre>{@code
      * connector.onStateChange = function () {
      *    var state = connector.getState();
-     *    let data = JSON.parse(state.data);
+     *    let data = state.data;
      *    ...
      * }
      * }</pre>
      *
      * @param state a state object to set
      */
-    void setState(Object state);
+    void setState(T state);
 
     /**
      * Register a {@link Consumer} that can be called from the
@@ -149,28 +143,15 @@ public interface JavaScriptComponent extends Component,
     /**
      * Invoke a named function that the connector JavaScript has added to the
      * JavaScript connector wrapper object. The arguments can be any boxed
-     * primitive type, String or arrays of any other supported type.
-     * Complex types (e.g. List, Set, Map, Connector or any
-     * JavaBean type) must be explicitly serialized to a json value
+     * primitive type, String, {@link JsonValue} or arrays of any other
+     * supported type. Complex types (e.g. List, Set, Map, Connector or any
+     * JavaBean type) must be explicitly serialized to a {@link JsonValue}
      * before sending.
      *
      * @param name      the name of the function
      * @param arguments function arguments
      */
     void callFunction(String name, Object... arguments);
-
-    /**
-     * @return a serializer that is user to serialize the component state
-     */
-    Gson getStateSerializer();
-
-    /**
-     * Sets a serializer that is user to serialize the component state.
-     * If no serializer is set explicitly, the the default one is used.
-     *
-     * @param gson a serializer to set
-     */
-    void setStateSerializer(Gson gson);
 
     /**
      * @return whether the required indicator is visible
@@ -190,7 +171,7 @@ public interface JavaScriptComponent extends Component,
      */
     class JavaScriptCallbackEvent extends EventObject {
 
-        protected List<?> arguments;
+        protected JsonArray arguments;
 
         /**
          * Constructs a prototypical Event.
@@ -198,7 +179,7 @@ public interface JavaScriptComponent extends Component,
          * @param source The object on which the Event initially occurred
          * @throws IllegalArgumentException if source is null
          */
-        public JavaScriptCallbackEvent(JavaScriptComponent source, List<?> arguments) {
+        public JavaScriptCallbackEvent(JavaScriptComponent source, JsonArray arguments) {
             super(source);
             this.arguments = arguments;
         }
@@ -211,7 +192,7 @@ public interface JavaScriptComponent extends Component,
         /**
          * @return a list of arguments with which the JavaScript function was called
          */
-        public List<?> getArguments() {
+        public JsonArray getArguments() {
             return arguments;
         }
     }

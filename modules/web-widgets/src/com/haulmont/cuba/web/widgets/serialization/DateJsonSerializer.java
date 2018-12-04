@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.gui.components.serialization;
+package com.haulmont.cuba.web.widgets.serialization;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -32,18 +32,19 @@ import java.util.Date;
 public class DateJsonSerializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:S";
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 
     @Override
     public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(DATE_FORMAT.format(src));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+        return new JsonPrimitive(dateFormat.format(src));
     }
 
     @Override
     public Date deserialize(JsonElement json, Type typeOfT,
                             JsonDeserializationContext context) throws JsonParseException {
         try {
-            return DATE_FORMAT.parse(json.getAsString());
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+            return dateFormat.parse(json.getAsString());
         } catch (ParseException e) {
             throw new JsonParseException(e);
         }

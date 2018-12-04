@@ -142,8 +142,6 @@ public class WebUiComponents implements UiComponents {
         /* Misc */
 
         classes.put(Timer.NAME, WebTimer.class);
-
-        classes.put(JavaScriptComponent.NAME, WebJavaScriptComponent.class);
     }
 
     @SuppressWarnings("unchecked")

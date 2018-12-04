@@ -17,12 +17,13 @@
 package com.haulmont.cuba.web.widgets.client.javascriptcomponent;
 
 import com.vaadin.shared.ui.JavaScriptComponentState;
+import elemental.json.JsonObject;
 
 public class CubaJavaScriptComponentState extends JavaScriptComponentState {
 
     public String initFunctionName;
 
-    public String data;
+    public JsonObject data;
 
     public boolean requiredIndicatorVisible = false;
 }

@@ -115,8 +115,6 @@ public class LayoutLoaderConfig {
 
         loaders.put(Form.NAME, FormLoader.class);
 
-        loaders.put(JavaScriptComponent.NAME, JavaScriptComponentLoader.class);
-
         /* Main window components */
 
         loaders.put(AppMenu.NAME, AppMenuLoader.class);

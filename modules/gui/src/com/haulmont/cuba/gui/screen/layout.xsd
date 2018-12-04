@@ -412,7 +412,6 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="STYLESHEET"/>
             <xs:enumeration value="JAVASCRIPT"/>
-            <xs:enumeration value="HTML_IMPORT"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -1199,7 +1198,7 @@
     </xs:complexType>
 
     <xs:complexType name="dependency">
-        <xs:attribute name="path" type="xs:string"/>
+        <xs:attribute name="path" type="xs:string" use="required"/>
         <xs:attribute name="type" type="dependencyType"/>
     </xs:complexType>
 
