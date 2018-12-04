@@ -18,12 +18,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.web.widgets.CubaJavaScriptComponent;
 import com.vaadin.ui.Dependency;
+import com.vaadin.ui.HasDependencies;
 import com.vaadin.ui.JavaScriptFunction;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class WebJavaScriptComponent<T> extends WebAbstractComponent<CubaJavaScriptComponent<T>>
@@ -42,48 +43,44 @@ public class WebJavaScriptComponent<T> extends WebAbstractComponent<CubaJavaScri
     }
 
     @Override
-    public Map<DependencyType, List<String>> getDependencies() {
-        Map<Dependency.Type, List<String>> dependencies = component.getDependencies();
-        if (dependencies.isEmpty()) {
-            return Collections.emptyMap();
+    public List<ClientDependency> getDependencies() {
+        List<HasDependencies.ClientDependency> vDependencies = component.getDependencies();
+        if (vDependencies.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        Map<DependencyType, List<String>> dependenciesToReturn = new HashMap<>();
-        for (Map.Entry<Dependency.Type, List<String>> entry : dependencies.entrySet()) {
-            dependenciesToReturn.put(WebWrapperUtils.toDependencyType(entry.getKey()), entry.getValue());
+        List<ClientDependency> dependencies = new ArrayList<>();
+        for (HasDependencies.ClientDependency dependency : vDependencies) {
+            DependencyType type = WebWrapperUtils.toDependencyType(dependency.getType());
+            dependencies.add(new ClientDependency(dependency.getPath(), type));
         }
 
-        return dependenciesToReturn;
+        return dependencies;
     }
 
     @Override
-    public List<String> getDependencies(DependencyType type) {
-        return component.getDependencies(WebWrapperUtils.toVaadinDependencyType(type));
-    }
-
-    @Override
-    public void setDependencies(Map<DependencyType, List<String>> dependencies) {
-        if (dependencies != null) {
-
-            Map<Dependency.Type, List<String>> dependenciesToSet = new HashMap<>();
-
-            for (Map.Entry<DependencyType, List<String>> entry : dependencies.entrySet()) {
-                dependenciesToSet.put(WebWrapperUtils.toVaadinDependencyType(entry.getKey()), entry.getValue());
-            }
-            component.setDependencies(dependenciesToSet);
-        } else {
-            component.setDependencies(null);
+    public void setDependencies(List<ClientDependency> dependencies) {
+        if (CollectionUtils.isEmpty(dependencies)) {
+            return;
         }
+
+        List<HasDependencies.ClientDependency> vDependencies = new ArrayList<>();
+        for (ClientDependency dependency : dependencies) {
+            Dependency.Type type = WebWrapperUtils.toVaadinDependencyType(dependency.getType());
+            vDependencies.add(new HasDependencies.ClientDependency(dependency.getPath(), type));
+        }
+
+        component.setDependencies(vDependencies);
     }
 
     @Override
-    public void setDependencies(DependencyType type, String... dependencies) {
-        component.setDependencies(WebWrapperUtils.toVaadinDependencyType(type), dependencies);
+    public void addDependency(String path, DependencyType type) {
+        component.addDependency(path, WebWrapperUtils.toVaadinDependencyType(type));
     }
 
     @Override
-    public void setDependencies(DependencyType type, List<String> dependencies) {
-        component.setDependencies(WebWrapperUtils.toVaadinDependencyType(type), dependencies);
+    public void addDependencies(String... dependencies) {
+        component.addDependencies(dependencies);
     }
 
     @Override

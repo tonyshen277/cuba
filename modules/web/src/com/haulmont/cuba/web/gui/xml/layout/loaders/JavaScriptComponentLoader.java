@@ -20,18 +20,14 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.xml.layout.loaders.AbstractComponentLoader;
 import com.haulmont.cuba.web.gui.components.JavaScriptComponent;
+import com.haulmont.cuba.web.gui.components.JavaScriptComponent.ClientDependency;
 import com.haulmont.cuba.web.gui.components.JavaScriptComponent.DependencyType;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScriptComponent> {
-
-    protected static final String JAVASCRIPT_EXTENSION = ".js";
-    protected static final String CSS_EXTENSION = ".css";
 
     @Override
     public void createComponent() {
@@ -85,7 +81,7 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
             return;
         }
 
-        Map<DependencyType, List<String>> allDependencies = new HashMap<>();
+        List<ClientDependency> dependencies = new ArrayList<>();
         for (Element dependency : dependenciesElement.elements("dependency")) {
             String path = dependency.attributeValue("path");
             if (Strings.isNullOrEmpty(path)) {
@@ -94,31 +90,13 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
             }
 
             String type = dependency.attributeValue("type");
-            DependencyType dependencyType = Strings.isNullOrEmpty(type)
-                    ? resolveTypeFromPath(path)
-                    : DependencyType.valueOf(type);
+            DependencyType dependencyType = !Strings.isNullOrEmpty(type)
+                    ? DependencyType.valueOf(type)
+                    : null;
 
-            List<String> paths = allDependencies.get(dependencyType);
-            if (paths == null) {
-                paths = new ArrayList<>();
-            }
-            paths.add(path);
-
-            allDependencies.put(dependencyType, paths);
+            dependencies.add(new ClientDependency(path, dependencyType));
         }
 
-        component.setDependencies(allDependencies);
-    }
-
-    protected DependencyType resolveTypeFromPath(String path) {
-        if (path.endsWith(JAVASCRIPT_EXTENSION)) {
-            return DependencyType.JAVASCRIPT;
-        }
-        if (path.endsWith(CSS_EXTENSION)) {
-            return DependencyType.STYLESHEET;
-        }
-
-        throw new GuiDevelopmentException("Can't resolve dependency type for path: " + path,
-                context.getFullFrameId());
+        component.setDependencies(dependencies);
     }
 }

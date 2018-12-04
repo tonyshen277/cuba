@@ -23,16 +23,16 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
 import com.vaadin.server.communication.UidlWriter;
 import com.vaadin.ui.Dependency;
-import org.apache.commons.collections4.CollectionUtils;
+import com.vaadin.ui.HasDependencies;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,25 +85,47 @@ public class CubaUidlWriter extends UidlWriter {
     }
 
     @Override
-    protected void handleAdditionalDependencies(Map<Dependency.Type, List<String>> dependencyMap,
-                                                LegacyCommunicationManager manager, List<Dependency> dependencies) {
-        for (Map.Entry<Dependency.Type, List<String>> entry : dependencyMap.entrySet()) {
-            List<String> dependenciesList = entry.getValue();
-            if (CollectionUtils.isNotEmpty(dependenciesList)) {
-                for (String dependency : dependenciesList) {
-                    String resourcePath;
-                    if (dependency.startsWith(WEB_JAR_PREFIX)) {
-                        String resourceUri = processResourceUri(dependency.replace(WEB_JAR_PREFIX, ""));
-                        resourcePath = getResourceActualPath(resourceUri, "");
-                    } else {
-                        resourcePath = dependency;
-                    }
+    protected void addAdditionalDependencies(List<HasDependencies.ClientDependency> allDependencies,
+                                             List<HasDependencies.ClientDependency> dependenciesToAdd) {
+        if (!dependenciesToAdd.isEmpty()) {
+            allDependencies.addAll(dependenciesToAdd);
+        }
+    }
 
-                    String url = manager.registerDependency(resourcePath, getClass());
-                    dependencies.add(new Dependency(entry.getKey(), url));
-                }
+    @Override
+    protected void handleAdditionalDependencies(List<HasDependencies.ClientDependency> dependenciesToAdd,
+                                                List<Dependency> dependencies, LegacyCommunicationManager manager) {
+        for (HasDependencies.ClientDependency dependency : dependenciesToAdd) {
+            String resourcePath;
+            String dependencyPath = dependency.getPath();
+            if (dependencyPath.startsWith(WEB_JAR_PREFIX)) {
+                String resourceUri = processResourceUri(dependencyPath.replace(WEB_JAR_PREFIX, ""));
+                resourcePath = getResourceActualPath(resourceUri, "");
+            } else {
+                resourcePath = dependencyPath;
+            }
+
+            Dependency.Type type = dependency.getType() != null
+                    ? dependency.getType()
+                    : resolveTypeFromPath(dependencyPath);
+            // If we can't resolve dependency type, i.e. it might have unsupported type,
+            // then we don't add such dependency
+            if (type != null) {
+                String url = manager.registerDependency(resourcePath, getClass());
+                dependencies.add(new Dependency(type, url));
             }
         }
+    }
+
+    @Nullable
+    protected Dependency.Type resolveTypeFromPath(String path) {
+        if (path.endsWith(JAVASCRIPT_EXTENSION)) {
+            return Dependency.Type.JAVASCRIPT;
+        }
+        if (path.endsWith(CSS_EXTENSION)) {
+            return Dependency.Type.STYLESHEET;
+        }
+        return null;
     }
 
     protected String getResourceActualPath(String uri, String overridePath) {

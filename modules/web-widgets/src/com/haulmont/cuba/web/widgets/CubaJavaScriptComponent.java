@@ -24,18 +24,15 @@ import com.google.gson.annotations.Expose;
 import com.haulmont.cuba.web.widgets.client.javascriptcomponent.CubaJavaScriptComponentState;
 import com.haulmont.cuba.web.widgets.serialization.DateJsonSerializer;
 import com.vaadin.ui.AbstractJavaScriptComponent;
-import com.vaadin.ui.Dependency.Type;
+import com.vaadin.ui.Dependency;
 import com.vaadin.ui.HasDependencies;
 import com.vaadin.ui.JavaScriptFunction;
 import elemental.json.Json;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent implements HasDependencies {
@@ -70,7 +67,7 @@ public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent impl
         builder.registerTypeHierarchyAdapter(Date.class, new DateJsonSerializer());
     }
 
-    protected Map<Type, List<String>> dependencies;
+    protected List<ClientDependency> dependencies;
     protected T stateData;
 
     protected Gson gson;
@@ -87,41 +84,29 @@ public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent impl
     }
 
     @Override
-    public Map<Type, List<String>> getDependencies() {
-        return dependencies != null ? dependencies : Collections.emptyMap();
+    public List<ClientDependency> getDependencies() {
+        return dependencies != null ? dependencies : Collections.emptyList();
     }
 
-    public List<String> getDependencies(Type type) {
-        if (dependencies == null) {
-            return Collections.emptyList();
-        }
-
-        return nullToEmpty(dependencies.get(type));
-    }
-
-    protected List<String> nullToEmpty(List<String> dependencies) {
-        return dependencies == null ? Collections.emptyList() : dependencies;
-    }
-
-    public void setDependencies(Map<Type, List<String>> dependencies) {
+    public void setDependencies(List<ClientDependency> dependencies) {
         this.dependencies = dependencies;
     }
 
-    public void setDependencies(Type type, String... dependencies) {
-        setDependencies(type, dependencies != null
-                ? new ArrayList<>(Arrays.asList(dependencies))
-                : null);
-    }
-
-    public void setDependencies(Type type, List<String> dependencies) {
-        if (this.dependencies == null) {
-            this.dependencies = new HashMap<>();
+    public void addDependency(String path, Dependency.Type type) {
+        if (dependencies == null) {
+            dependencies = new ArrayList<>();
         }
 
-        if (dependencies != null) {
-            this.dependencies.put(type, dependencies);
-        } else {
-            this.dependencies.remove(type);
+        dependencies.add(new ClientDependency(path, type));
+    }
+
+    public void addDependencies(String... dependencies) {
+        if (this.dependencies == null) {
+            this.dependencies = new ArrayList<>();
+        }
+
+        for (String path : dependencies) {
+            this.dependencies.add(new ClientDependency(path));
         }
     }
 

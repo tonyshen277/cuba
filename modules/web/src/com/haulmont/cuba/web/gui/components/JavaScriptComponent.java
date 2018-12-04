@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.gson.annotations.Expose;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasContextHelp;
 import elemental.json.JsonArray;
@@ -24,7 +23,6 @@ import elemental.json.JsonValue;
 
 import java.util.EventObject;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -38,19 +36,13 @@ public interface JavaScriptComponent<T> extends Component,
     String NAME = "javaScriptComponent";
 
     /**
-     * @return a map of dependencies by type
+     * @return a list of dependencies
      */
-    Map<DependencyType, List<String>> getDependencies();
+    List<ClientDependency> getDependencies();
 
     /**
-     * @param type the type for which dependencies are returned
-     * @return a list of dependencies for the given type
-     */
-    List<String> getDependencies(DependencyType type);
-
-    /**
-     * Sets a map of dependencies by type.
-     * Each dependency represented with a string and corresponds to one of the sources:
+     * Sets a list of dependencies.
+     * Each dependency represented with a {@link ClientDependency} object which path corresponds to one of the sources:
      *
      * <ul>
      * <li>classpath (default)</li>
@@ -60,11 +52,10 @@ public interface JavaScriptComponent<T> extends Component,
      *
      * @param dependencies dependencies to set
      */
-    void setDependencies(Map<DependencyType, List<String>> dependencies);
+    void setDependencies(List<ClientDependency> dependencies);
 
     /**
-     * Sets dependencies for the given type.
-     * Each dependency represented with a string and corresponds to one of the sources:
+     * Adds a dependency. Path path corresponds to one of the sources:
      *
      * <ul>
      * <li>classpath (default)</li>
@@ -72,14 +63,13 @@ public interface JavaScriptComponent<T> extends Component,
      * <li>vaadin://</li>
      * </ul>
      *
-     * @param type         the type for which dependencies are set
-     * @param dependencies dependencies to set
+     * @param path a dependency path
+     * @param type a dependency type
      */
-    void setDependencies(DependencyType type, String... dependencies);
+    void addDependency(String path, DependencyType type);
 
     /**
-     * Sets dependencies for the given type.
-     * Each dependency represented with a string and corresponds to one of the sources:
+     * Adds dependency paths. Each path corresponds to one of the sources:
      *
      * <ul>
      * <li>classpath (default)</li>
@@ -87,10 +77,9 @@ public interface JavaScriptComponent<T> extends Component,
      * <li>vaadin://</li>
      * </ul>
      *
-     * @param type         the type for which dependencies are set
-     * @param dependencies dependencies to set
+     * @param dependencies
      */
-    void setDependencies(DependencyType type, List<String> dependencies);
+    void addDependencies(String... dependencies);
 
     /**
      * @return an initialization function name that will be
@@ -101,7 +90,7 @@ public interface JavaScriptComponent<T> extends Component,
     /**
      * Sets an initialization function name that will be
      * used to find an entry point for the JS component connector.
-     *
+     * <p>
      * CAUTION: the initialization function name must be unique within window.
      *
      * @param initFunctionName an initialization function name
@@ -218,5 +207,27 @@ public interface JavaScriptComponent<T> extends Component,
     enum DependencyType {
         STYLESHEET,
         JAVASCRIPT
+    }
+
+    class ClientDependency {
+        protected String path;
+        protected DependencyType type;
+
+        public ClientDependency(String path) {
+            this.path = path;
+        }
+
+        public ClientDependency(String path, DependencyType type) {
+            this.path = path;
+            this.type = type;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public DependencyType getType() {
+            return type;
+        }
     }
 }

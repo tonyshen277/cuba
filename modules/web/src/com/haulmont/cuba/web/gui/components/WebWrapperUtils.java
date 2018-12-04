@@ -49,6 +49,8 @@ import com.vaadin.ui.Dependency;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
 
+import javax.annotation.Nullable;
+
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.vaadin.v7.ui.AbstractTextField.TextChangeEventMode;
 
@@ -608,8 +610,11 @@ public final class WebWrapperUtils {
         }
     }
 
+    @Nullable
     public static DependencyType toDependencyType(Dependency.Type type) {
-        checkNotNullArgument(type);
+        if (type == null) {
+            return null;
+        }
 
         switch (type) {
             case JAVASCRIPT:
@@ -621,8 +626,11 @@ public final class WebWrapperUtils {
         }
     }
 
+    @Nullable
     public static Dependency.Type toVaadinDependencyType(DependencyType type) {
-        checkNotNullArgument(type);
+        if (type == null) {
+            return null;
+        }
 
         switch (type) {
             case JAVASCRIPT:
