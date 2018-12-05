@@ -21,16 +21,20 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
-public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon, HasContextHelp {
+public interface Calendar<T>
+        extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon, HasContextHelp {
+
     String NAME = "calendar";
 
     /**
@@ -65,6 +69,9 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
      */
     void setDatasource(CollectionDatasource datasource);
     CollectionDatasource getDatasource();
+
+    CollectionContainer getCollectionContainer();
+    void setCollectionContainer(CollectionContainer container);
 
     /**
      * Set format for time. 12H/24H.
@@ -238,19 +245,30 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         FORMAT_12H, FORMAT_24H
     }
 
-    class CalendarEventMoveEvent {
-        protected Calendar calendar;
+    class CalendarEventMoveEvent<E extends Entity> extends EventObject {
         protected CalendarEvent calendarEvent;
         protected Date newStart;
 
-        public CalendarEventMoveEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart) {
-            this.calendar = calendar;
+        public CalendarEventMoveEvent(Calendar<E> calendar, CalendarEvent calendarEvent, Date newStart) {
+            super(calendar);
+
             this.calendarEvent = calendarEvent;
             this.newStart = newStart;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
 
         public CalendarEvent getCalendarEvent() {
@@ -262,24 +280,34 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    class CalendarBackwardClickEvent {
-        protected Calendar calendar;
+    class CalendarBackwardClickEvent<E extends Entity> extends EventObject {
 
-        public CalendarBackwardClickEvent(Calendar calendar) {
-            this.calendar = calendar;
+        public CalendarBackwardClickEvent(Calendar<E> calendar) {
+            super(calendar);
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
     }
 
-    class CalendarDateClickEvent {
-        protected Calendar calendar;
+    class CalendarDateClickEvent<E extends Entity> extends EventObject {
         protected Date date;
 
-        public CalendarDateClickEvent(Calendar calendar, Date date) {
-            this.calendar = calendar;
+        public CalendarDateClickEvent(Calendar<E> calendar, Date date) {
+            super(calendar);
+
             this.date = date;
         }
 
@@ -287,23 +315,34 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return date;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
     }
 
-    class CalendarEventClickEvent {
-        protected Calendar calendar;
+    class CalendarEventClickEvent<E extends Entity> extends EventObject {
         protected CalendarEvent calendarEvent;
-        protected Entity entity;
+        protected E entity;
 
-        public CalendarEventClickEvent(Calendar calendar, CalendarEvent calendarEvent, @Nullable Entity entity) {
-            this.calendar = calendar;
+        public CalendarEventClickEvent(Calendar<E> calendar, CalendarEvent calendarEvent, @Nullable E entity) {
+            super(calendar);
+
             this.calendarEvent = calendarEvent;
             this.entity = entity;
         }
 
-        public Entity getEntity() {
+        public E getEntity() {
             return entity;
         }
 
@@ -311,8 +350,19 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return calendarEvent;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
     }
 
@@ -328,16 +378,16 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    class CalendarEventResizeEvent {
-        protected Calendar calendar;
+    class CalendarEventResizeEvent<E extends Entity> extends EventObject {
         protected CalendarEvent calendarEvent;
         protected Date newStart;
         protected Date newEnd;
         protected Entity entity;
 
-        public CalendarEventResizeEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart,
+        public CalendarEventResizeEvent(Calendar<E> calendar, CalendarEvent calendarEvent, Date newStart,
                                         Date newEnd, @Nullable Entity entity) {
-            this.calendar = calendar;
+            super(calendar);
+
             this.calendarEvent = calendarEvent;
             this.newEnd = newEnd;
             this.newStart = newStart;
@@ -352,8 +402,19 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return calendarEvent;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
 
         public Date getNewStart() {
@@ -365,19 +426,30 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    class CalendarWeekClickEvent {
-        protected Calendar calendar;
+    class CalendarWeekClickEvent<E extends Entity> extends EventObject {
         protected int week;
         protected int year;
 
-        public CalendarWeekClickEvent(Calendar calendar, int week, int year) {
-            this.calendar = calendar;
+        public CalendarWeekClickEvent(Calendar<E> calendar, int week, int year) {
+            super(calendar);
+
             this.week = week;
             this.year = year;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
 
         public int getWeek() {
@@ -389,19 +461,30 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    class CalendarRangeSelectEvent {
-        protected Calendar calendar;
+    class CalendarRangeSelectEvent<E extends Entity> extends EventObject {
         protected Date start;
         protected Date end;
 
-        public CalendarRangeSelectEvent(Calendar calendar, Date start, Date end) {
-            this.calendar = calendar;
+        public CalendarRangeSelectEvent(Calendar<E> calendar, Date start, Date end) {
+            super(calendar);
+
             this.start = start;
             this.end = end;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<E> getSource() {
+            return (Calendar<E>) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
+        public Calendar<E> getCalendar() {
+            return getSource();
         }
 
         public Date getStart() {
