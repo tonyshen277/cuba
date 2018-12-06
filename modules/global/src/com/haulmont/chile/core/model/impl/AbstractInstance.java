@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.CubaEnhancedSetGet;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -93,7 +94,11 @@ public abstract class AbstractInstance implements Instance {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(String name) {
-        return (T) getMethodsCache().invokeGetter(this, name);
+        if (this instanceof CubaEnhancedSetGet)
+            return (T) //getMethodsCache().invokeGetter(this, name);
+                    ((CubaEnhancedSetGet) this).getValueNative(name);
+        else
+            throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
     }
 
     protected MethodsCache getMethodsCache() {
@@ -113,7 +118,7 @@ public abstract class AbstractInstance implements Instance {
 
     /**
      * Set value to property in instance
-     *
+     * <p>
      * For internal use only. Use {@link #setValue(String, Object)}
      *
      * @param name        property name
@@ -124,7 +129,11 @@ public abstract class AbstractInstance implements Instance {
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
-            getMethodsCache().invokeSetter(this, name, value);
+            //getMethodsCache().invokeSetter(this, name, value);
+            if (this instanceof CubaEnhancedSetGet)
+                ((CubaEnhancedSetGet) this).setValueNative(name, value);
+            else
+                throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
         }
     }
 
