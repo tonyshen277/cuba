@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.HasContextHelp;
 import elemental.json.JsonArray;
 import elemental.json.JsonValue;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
@@ -31,9 +32,9 @@ import java.util.function.Consumer;
  * @param <T> type of the state object
  */
 public interface JavaScriptComponent<T> extends Component,
-        Component.HasCaption, Component.HasDescription, Component.HasIcon, HasContextHelp {
+        Component.HasCaption, Component.HasDescription, Component.HasIcon, Component.BelongToFrame, HasContextHelp {
 
-    String NAME = "javaScriptComponent";
+    String NAME = "jsComponent";
 
     /**
      * @return a list of dependencies
@@ -77,7 +78,7 @@ public interface JavaScriptComponent<T> extends Component,
      * <li>vaadin://</li>
      * </ul>
      *
-     * @param dependencies
+     * @param dependencies dependencies to add
      */
     void addDependencies(String... dependencies);
 
@@ -226,6 +227,7 @@ public interface JavaScriptComponent<T> extends Component,
             return path;
         }
 
+        @Nullable
         public DependencyType getType() {
             return type;
         }

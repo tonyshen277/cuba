@@ -111,7 +111,7 @@ public class CubaUidlWriter extends UidlWriter {
             // If we can't resolve dependency type, i.e. it might have unsupported type,
             // then we don't add such dependency
             if (type != null) {
-                String url = manager.registerDependency(resourcePath, getClass());
+                String url = manager.registerDependency(resourcePath, CubaUidlWriter.class);
                 dependencies.add(new Dependency(type, url));
             }
         }

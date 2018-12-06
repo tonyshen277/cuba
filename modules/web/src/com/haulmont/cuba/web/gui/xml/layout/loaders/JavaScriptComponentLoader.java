@@ -38,6 +38,7 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
     @Override
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
+        assignFrame(resultComponent);
 
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);
