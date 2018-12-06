@@ -70,7 +70,16 @@ public interface Calendar<T>
     void setDatasource(CollectionDatasource datasource);
     CollectionDatasource getDatasource();
 
+    /**
+     * @return an instance of {@link CollectionContainer}
+     */
     CollectionContainer getCollectionContainer();
+
+    /**
+     * Sets an instance of {@link CollectionContainer} as the calendar event provider.
+     *
+     * @param container an instance of {@link CollectionContainer}
+     */
     void setCollectionContainer(CollectionContainer container);
 
     /**
