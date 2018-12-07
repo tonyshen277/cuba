@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
+import com.haulmont.cuba.gui.components.calendar.ContainerCalendarEventProvider;
 import com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -138,6 +139,10 @@ public interface Calendar<T>
 
     /**
      * Set the calendar event provider. Provider can contain calendar events.
+     *
+     * @param calendarEventProvider an event provider with events
+     * @see ContainerCalendarEventProvider
+     * @see EntityCalendarEventProvider
      */
     void setEventProvider(CalendarEventProvider calendarEventProvider);
     /**

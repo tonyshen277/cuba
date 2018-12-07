@@ -246,8 +246,7 @@ public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
             calendarEventProvider.setCalendar(this);
             component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
         } else {
-            // FIXME: gg, can't be null
-            component.setEventProvider(null);
+            component.setEventProvider(new CalendarEventProviderWrapper(new ListCalendarEventProvider()));
         }
     }
 
