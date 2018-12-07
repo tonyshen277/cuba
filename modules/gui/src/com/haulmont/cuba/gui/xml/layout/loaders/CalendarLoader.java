@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Calendar;
+import com.haulmont.cuba.gui.components.calendar.ContainerCalendarEventProvider;
 import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -110,7 +111,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
                     containerId, context.getCurrentFrameId());
         }
 
-        component.setCollectionContainer((CollectionContainer) container);
+        component.setEventProvider(new ContainerCalendarEventProvider<>(((CollectionContainer) container)));
     }
 
     protected void loadDatasource(Calendar component, Element element) {
