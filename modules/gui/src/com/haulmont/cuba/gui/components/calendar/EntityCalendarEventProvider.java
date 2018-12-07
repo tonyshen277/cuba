@@ -80,6 +80,10 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
         };
     }
 
+    public CollectionDatasource getDatasource() {
+        return datasource;
+    }
+
     @Override
     public void addEvent(CalendarEvent event) {
         throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");

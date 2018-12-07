@@ -75,6 +75,10 @@ public class ContainerCalendarEventProvider<E extends Entity>
         }
     }
 
+    public CollectionContainer<E> getContainer() {
+        return container;
+    }
+
     @Override
     public void addEvent(CalendarEvent event) {
         throw new UnsupportedOperationException("Use container for changing data items of " +

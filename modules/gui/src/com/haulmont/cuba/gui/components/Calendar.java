@@ -20,8 +20,8 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
+import com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
 import java.time.DayOfWeek;
@@ -66,21 +66,21 @@ public interface Calendar<T>
 
     /**
      * Set collection datasource for the calendar component with a collection of events.
-     */
-    void setDatasource(CollectionDatasource datasource);
-    CollectionDatasource getDatasource();
-
-    /**
-     * @return an instance of {@link CollectionContainer}
-     */
-    CollectionContainer getCollectionContainer();
-
-    /**
-     * Sets an instance of {@link CollectionContainer} as the calendar event provider.
      *
-     * @param container an instance of {@link CollectionContainer}
+     * @param datasource a datasource to set
+     * @deprecated @deprecated Use {@link #setEventProvider(CalendarEventProvider)}
+     * with {@link EntityCalendarEventProvider} instead
      */
-    void setCollectionContainer(CollectionContainer container);
+    @Deprecated
+    void setDatasource(CollectionDatasource datasource);
+
+    /**
+     * @return a datasource
+     * @deprecated Use {@link #getEventProvider()} instead
+     */
+    @Nullable
+    @Deprecated
+    CollectionDatasource getDatasource();
 
     /**
      * Set format for time. 12H/24H.

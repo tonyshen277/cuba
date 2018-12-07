@@ -24,13 +24,11 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Calendar;
 import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
-import com.haulmont.cuba.gui.components.calendar.ContainerCalendarEventProvider;
 import com.haulmont.cuba.gui.components.calendar.EntityCalendarEvent;
 import com.haulmont.cuba.gui.components.calendar.ListCalendarEventProvider;
 import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrapper;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.widgets.CubaCalendar;
@@ -38,6 +36,7 @@ import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.Nullable;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.util.*;
@@ -46,8 +45,6 @@ import java.util.stream.Collectors;
 
 public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
         implements Calendar<T>, InitializingBean {
-    private CollectionDatasource datasource;
-    private CollectionContainer container;
 
     protected final String TIME_FORMAT_12H = "12H";
     protected final String TIME_FORMAT_24H = "24H";
@@ -153,8 +150,6 @@ public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        this.datasource = datasource;
-
         if (datasource == null) {
             setEventProvider(null);
         } else {
@@ -163,25 +158,13 @@ public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
         }
     }
 
+    @Nullable
     @Override
     public CollectionDatasource getDatasource() {
-        return datasource;
-    }
-
-    @Override
-    public CollectionContainer getCollectionContainer() {
-        return container;
-    }
-
-    @Override
-    public void setCollectionContainer(CollectionContainer container) {
-        this.container = container;
-
-        if (container == null) {
-            setEventProvider(null);
-        } else {
-            setEventProvider(new ContainerCalendarEventProvider<>(container));
-        }
+        return (calendarEventProvider instanceof com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider)
+                ? ((com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider) calendarEventProvider)
+                .getDatasource()
+                : null;
     }
 
     @Override
