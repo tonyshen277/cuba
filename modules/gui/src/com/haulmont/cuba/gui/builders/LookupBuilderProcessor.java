@@ -20,9 +20,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.components.HasUserActionSupport;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -146,8 +146,8 @@ public class LookupBuilderProcessor {
         if (!selectedItems.isEmpty()) {
             Entity newValue = selectedItems.iterator().next();
             // In case of PickerField set the value as if the user had set it
-            if (field instanceof PickerField) {
-                ((PickerField<E>) field).setValue((E) newValue, true);
+            if (field instanceof HasUserActionSupport) {
+                ((HasUserActionSupport<E>) field).setValueByUser((E) newValue);
             } else {
                 field.setValue((E) newValue);
             }

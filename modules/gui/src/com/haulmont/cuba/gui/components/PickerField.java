@@ -73,16 +73,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         return new TypeToken<PickerField<T>>() {};
     }
 
-    /**
-     * Sets the value of this component. Whether this event originates
-     * from the user or not is only used for the {@link ValueChangeEvent}.
-     *
-     * @param value          the new value
-     * @param userOriginated {@code true} if this event originates from
-     *                       the user, {@code false} otherwise.
-     */
-    void setValue(V value, boolean userOriginated);
-
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);
 
@@ -473,8 +463,12 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
             }
 
-            // Set the value as if the user had set it
-            pickerField.setValue(newValue, true);
+            if (pickerField instanceof HasUserActionSupport) {
+                // Set the value as if the user had set it
+                ((HasUserActionSupport) pickerField).setValueByUser(newValue);
+            } else {
+                pickerField.setValue(newValue);
+            }
 
             afterSelect(items);
             if (afterLookupSelectionHandler != null) {
@@ -565,7 +559,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 if (value != null
                         && entityValueSource.getMetaPropertyPath() != null
                         && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
-                    // TODO: gg, use value source
                     Datasource propertyDatasource = getPropertyDatasource();
                     if (propertyDatasource != null) {
                         for (Datasource datasource : propertyDatasource.getDsContext().getAll()) {
@@ -584,8 +577,12 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     }
                 }
 
-                // Set the value as if the user had set it
-                pickerField.setValue(pickerField.getEmptyValue(), true);
+                if (pickerField instanceof HasUserActionSupport) {
+                    // Set the value as if the user had set it
+                    ((HasUserActionSupport) pickerField).setValueByUser(pickerField.getEmptyValue());
+                } else {
+                    pickerField.clear();
+                }
             }
         }
     }
