@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.HasUserActionSupport;
+import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -86,12 +86,8 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
             // todo composition
-            if (pickerField instanceof HasUserActionSupport) {
-                // Set the value as if the user had set it
-                ((HasUserActionSupport) pickerField).setValueByUser(pickerField.getEmptyValue());
-            } else {
-                pickerField.clear();
-            }
+            // Set the value as if the user had set it
+            ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
         } else {
             // call action perform handlers from super, delegate execution
             super.actionPerform(component);

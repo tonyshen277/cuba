@@ -463,12 +463,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
             }
 
-            if (pickerField instanceof HasUserActionSupport) {
-                // Set the value as if the user had set it
-                ((HasUserActionSupport) pickerField).setValueByUser(newValue);
-            } else {
-                pickerField.setValue(newValue);
-            }
+            // Set the value as if the user had set it
+            ((SupportsUserAction) pickerField).setValueFromUser(newValue);
 
             afterSelect(items);
             if (afterLookupSelectionHandler != null) {
@@ -577,12 +573,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     }
                 }
 
-                if (pickerField instanceof HasUserActionSupport) {
-                    // Set the value as if the user had set it
-                    ((HasUserActionSupport) pickerField).setValueByUser(pickerField.getEmptyValue());
-                } else {
-                    pickerField.clear();
-                }
+                // Set the value as if the user had set it
+                ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
             }
         }
     }
