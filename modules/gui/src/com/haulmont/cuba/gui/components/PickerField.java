@@ -73,6 +73,16 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         return new TypeToken<PickerField<T>>() {};
     }
 
+    /**
+     * Sets the value of this component. Whether this event originates
+     * from the user or not is only used for the {@link ValueChangeEvent}.
+     *
+     * @param value          the new value
+     * @param userOriginated {@code true} if this event originates from
+     *                       the user, {@code false} otherwise.
+     */
+    void setValue(V value, boolean userOriginated);
+
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);
 
@@ -463,7 +473,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
             }
 
-            pickerField.setValue(newValue);
+            // Set the value as if the user had set it
+            pickerField.setValue(newValue, true);
 
             afterSelect(items);
             if (afterLookupSelectionHandler != null) {
@@ -573,7 +584,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     }
                 }
 
-                pickerField.setValue(null);
+                // Set the value as if the user had set it
+                pickerField.setValue(pickerField.getEmptyValue(), true);
             }
         }
     }

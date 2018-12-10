@@ -86,6 +86,24 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         component.addActionHandler(actionHandler);
     }
 
+    @Override
+    public void setValue(V value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(V value, boolean userOriginated) {
+        setValueToPresentation(convertToPresentation(value));
+
+        V oldValue = internalValue;
+        this.internalValue = value;
+
+        if (!fieldValueEquals(value, oldValue)) {
+            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, userOriginated);
+            publish(ValueChangeEvent.class, event);
+        }
+    }
+
     @Inject
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
