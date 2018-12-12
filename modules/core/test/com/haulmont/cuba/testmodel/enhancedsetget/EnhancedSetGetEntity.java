@@ -28,6 +28,9 @@ import java.util.Map;
 public class EnhancedSetGetEntity<T> extends StandardEntity {
 
     @Transient
+    private int primitiveField;
+
+    @Transient
     private Map<String, Integer> map;
 
     @Transient
@@ -44,6 +47,14 @@ public class EnhancedSetGetEntity<T> extends StandardEntity {
 
     @Transient
     private Map<T, Integer> genericMap;
+
+    public int getPrimitiveField() {
+        return primitiveField;
+    }
+
+    public void setPrimitiveField(int primitiveField) {
+        this.primitiveField = primitiveField;
+    }
 
     public Map<String, Integer> getMap() {
         return map;

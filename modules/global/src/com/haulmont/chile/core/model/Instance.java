@@ -26,6 +26,15 @@ import java.io.Serializable;
  */
 public interface Instance extends Serializable {
 
+    default void setValueOldCache(String name, Object value, boolean checkEquals){}
+
+    default void setValueLambdaCache(String name, Object value, boolean checkEquals){}
+
+    default <T> T getValueOldCache(String name){ return null; }
+
+    default <T> T getValueLambdaCache(String name){ return  null; }
+
+
     /**
      * @return metaclass of this object. Throws exception if the metaclass is not found.
      */

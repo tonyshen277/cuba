@@ -19,6 +19,7 @@ package com.haulmont.chile.core.model.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.chile.core.model.utils.LambdaMethodsCache;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.CubaEnhancedSetGet;
@@ -38,6 +39,7 @@ public abstract class AbstractInstance implements Instance {
     protected transient Collection<WeakReference<PropertyChangeListener>> __propertyChangeListeners;
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
+    private static transient Map<Class, LambdaMethodsCache> lambdaMethodsCache = new ConcurrentHashMap<>();
 
     protected void propertyChanged(String s, Object prev, Object curr) {
         if (__propertyChangeListeners != null) {
@@ -94,11 +96,40 @@ public abstract class AbstractInstance implements Instance {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(String name) {
-        if (this instanceof CubaEnhancedSetGet)
-            return (T) //getMethodsCache().invokeGetter(this, name);
-                    ((CubaEnhancedSetGet) this).getValueNative(name);
-        else
-            throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
+        //if (this instanceof CubaEnhancedSetGet)
+        return (T) //getMethodsCache().invokeGetter(this, name);
+                ((CubaEnhancedSetGet) this).getValueNative(name);
+        //else
+        // throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
+        //getLambdaMethodsCache().getValue(name, this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getValueOldCache(String name) {
+        return (T) getMethodsCache().invokeGetter(this, name);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getValueLambdaCache(String name) {
+        return (T) getLambdaMethodsCache().getValue(name, this);
+    }
+
+    @Override
+    public void setValueOldCache(String name, Object value, boolean checkEquals) {
+        Object oldValue = getValueOldCache(name);
+        if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
+            getMethodsCache().invokeSetter(this, name, value);
+        }
+    }
+
+    @Override
+    public void setValueLambdaCache(String name, Object value, boolean checkEquals) {
+        Object oldValue = getValueLambdaCache(name);
+        if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
+            getLambdaMethodsCache().setValue(name, value, this);
+        }
     }
 
     protected MethodsCache getMethodsCache() {
@@ -107,6 +138,16 @@ public abstract class AbstractInstance implements Instance {
         if (cache == null) {
             cache = new MethodsCache(cls);
             methodCacheMap.put(cls, cache);
+        }
+        return cache;
+    }
+
+    protected LambdaMethodsCache getLambdaMethodsCache() {
+        Class cls = getClass();
+        LambdaMethodsCache cache = lambdaMethodsCache.get(cls);
+        if (cache == null) {
+            cache = new LambdaMethodsCache(cls);
+            lambdaMethodsCache.put(cls, cache);
         }
         return cache;
     }
@@ -129,11 +170,12 @@ public abstract class AbstractInstance implements Instance {
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
+            //getLambdaMethodsCache().setValue(name, value,this);
             //getMethodsCache().invokeSetter(this, name, value);
-            if (this instanceof CubaEnhancedSetGet)
-                ((CubaEnhancedSetGet) this).setValueNative(name, value);
-            else
-                throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
+            //if (this instanceof CubaEnhancedSetGet)
+            ((CubaEnhancedSetGet) this).setValueNative(name, value);
+            //else
+            //throw new RuntimeException("This object ins not an instance of CubaEnhancedSetGet");
         }
     }
 
