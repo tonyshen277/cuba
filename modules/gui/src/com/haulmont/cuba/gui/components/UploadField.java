@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-                                     Component.Focusable {
+                                     Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 
     abstract class FileUploadEvent {
         private final String fileName;

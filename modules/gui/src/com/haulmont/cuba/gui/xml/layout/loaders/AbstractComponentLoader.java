@@ -275,16 +275,18 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             String description = element.attributeValue("description");
 
             description = loadResourceString(description);
+            component.setDescription(description);
 
-            if (component instanceof HasDescriptionContentMode) {
-                String descriptionContentMode = element.attributeValue("descriptionContentMode");
-                if (!Strings.isNullOrEmpty(descriptionContentMode)) {
-                    ((HasDescriptionContentMode) component)
-                            .setDescription(description, ContentMode.valueOf(descriptionContentMode));
-                } else {
-                    component.setDescription(description);
-                }
+            if (component instanceof HasHtmlDescription) {
+                loadDescriptionAsHtml((HasHtmlDescription) component, element);
             }
+        }
+    }
+
+    protected void loadDescriptionAsHtml(HasHtmlDescription component, Element element) {
+        String descriptionAsHtml = element.attributeValue("descriptionAsHtml");
+        if (!Strings.isNullOrEmpty(descriptionAsHtml)) {
+            component.setDescriptionAsHtml(Boolean.parseBoolean(descriptionAsHtml));
         }
     }
 

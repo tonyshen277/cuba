@@ -28,6 +28,7 @@ public interface HasHtmlCaption extends Component.HasCaption {
      *
      * @param captionAsHtml {@code true} if the caption is rendered as HTML,
      *                      {@code false} if rendered as plain text
+     * @see #setCaption(String)
      */
     void setCaptionAsHtml(boolean captionAsHtml);
 }

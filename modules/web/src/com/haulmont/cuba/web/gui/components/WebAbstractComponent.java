@@ -18,7 +18,14 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ContentMode;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.HasContextHelp;
+import com.haulmont.cuba.gui.components.HasDebugId;
+import com.haulmont.cuba.gui.components.HasHtmlCaption;
+import com.haulmont.cuba.gui.components.HasHtmlDescription;
+import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.web.AppUI;
@@ -38,7 +45,7 @@ import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption, HasDebugId, HasContextHelp, HasHtmlCaption, HasDescriptionContentMode {
+                   Component.HasCaption, HasDebugId, HasContextHelp, HasHtmlCaption, HasHtmlDescription {
 
     public static final String ICON_STYLE = "icon";
 
@@ -51,6 +58,8 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected String icon;
+
+    protected boolean descriptionAsHtml = false;
 
     protected Consumer<ContextHelpIconClickEvent> contextHelpIconClickHandler;
     protected Registration contextHelpIconClickListener;
@@ -250,12 +259,23 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setDescription(String description) {
-        ((AbstractComponent) component).setDescription(description);
+        ((AbstractComponent) component).setDescription(description, descriptionAsHtml
+                ? com.vaadin.shared.ui.ContentMode.HTML
+                : com.vaadin.shared.ui.ContentMode.PREFORMATTED);
     }
 
     @Override
-    public void setDescription(String description, ContentMode contentMode) {
-        ((AbstractComponent) component).setDescription(description, WebWrapperUtils.toVaadinContentMode(contentMode));
+    public boolean isDescriptionAsHtml() {
+        return descriptionAsHtml;
+    }
+
+    @Override
+    public void setDescriptionAsHtml(boolean descriptionAsHtml) {
+        if (this.descriptionAsHtml != descriptionAsHtml) {
+            this.descriptionAsHtml = descriptionAsHtml;
+            // Trigger component changes
+            setDescription(getDescription());
+        }
     }
 
     @Override

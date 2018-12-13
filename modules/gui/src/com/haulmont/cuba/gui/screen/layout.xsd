@@ -967,12 +967,12 @@
 
     <xs:attributeGroup name="hasHtmlCaption">
         <xs:attributeGroup ref="hasHtmlCaptionProp"/>
-        <xs:attributeGroup ref="hasDescriptionWithMode"/>
+        <xs:attributeGroup ref="hasHtmlDescription"/>
     </xs:attributeGroup>
 
-    <xs:attributeGroup name="hasDescriptionWithMode">
+    <xs:attributeGroup name="hasHtmlDescription">
         <xs:attribute name="description" type="resourceString"/>
-        <xs:attribute name="descriptionContentMode" type="contentMode"/>
+        <xs:attribute name="descriptionAsHtml" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasContextHelp">
@@ -1242,7 +1242,7 @@
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attributeGroup ref="hasDataContainer"/>
         <xs:attributeGroup ref="hasContextHelp"/>
-        <xs:attributeGroup ref="hasDescriptionWithMode"/>
+        <xs:attributeGroup ref="hasHtmlDescription"/>
 
         <xs:attributeGroup ref="hasCss"/>
 

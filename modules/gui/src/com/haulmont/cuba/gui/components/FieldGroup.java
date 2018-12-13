@@ -250,7 +250,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * After component is set it can be used as Field API for a Component that does not implement {@link Field}.
      */
     interface FieldConfig extends HasXmlDescriptor, HasCaption, HasHtmlCaption,
-            HasDescriptionContentMode, HasFormatter, HasInputPrompt {
+            HasHtmlDescription, HasFormatter, HasInputPrompt {
         /**
          * @return id
          */

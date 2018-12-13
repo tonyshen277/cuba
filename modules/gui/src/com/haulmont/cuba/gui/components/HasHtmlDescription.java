@@ -16,13 +16,20 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface HasDescriptionContentMode extends Component.HasDescription {
+public interface HasHtmlDescription extends Component.HasDescription {
+
     /**
-     * Sets the component's description using given content mode.
+     * @return {@code true} if the description is rendered as HTML,
+     * {@code false} if rendered as plain text
+     */
+    boolean isDescriptionAsHtml();
+
+    /**
+     * Sets whether the description is rendered as HTML.
      *
-     * @param description the new description to set
-     * @param contentMode the content mode for the description
+     * @param descriptionAsHtml {@code true} if the description is rendered as HTML,
+     *                          {@code false} if rendered as plain text
      * @see #setDescription(String)
      */
-    void setDescription(String description, ContentMode contentMode);
+    void setDescriptionAsHtml(boolean descriptionAsHtml);
 }

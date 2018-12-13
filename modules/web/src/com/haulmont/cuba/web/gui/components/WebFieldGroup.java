@@ -341,12 +341,11 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
             if (fci.getTargetDescription() != null) {
                 // we check empty for description since Vaadin components have "" description by default
-                if (fieldComponent instanceof HasDescriptionContentMode
-                        && fci.getTargetDescriptionContentMode() != null) {
-                    ((HasDescriptionContentMode) hasCaption)
-                            .setDescription(fci.getTargetDescription(), fci.getTargetDescriptionContentMode());
-                } else {
-                    hasCaption.setDescription(fci.getTargetDescription());
+                hasCaption.setDescription(fci.getTargetDescription());
+
+                if (fieldComponent instanceof HasHtmlDescription
+                        && fci.getTargetDescriptionAsHtml() != null) {
+                    ((HasHtmlDescription) hasCaption).setDescriptionAsHtml(fci.getTargetDescriptionAsHtml());
                 }
             }
         }
@@ -815,9 +814,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         protected String targetRequiredMessage;
         protected CollectionDatasource targetOptionsDatasource;
         protected String targetCaption;
-        protected boolean targetCaptionAsHtml;
+        protected Boolean targetCaptionAsHtml;
         protected String targetDescription;
-        protected ContentMode targetDescriptionContentMode;
+        protected Boolean targetDescriptionAsHtml;
         protected String targetContextHelpText;
         protected Boolean targetContextHelpTextHtmlEnabled;
         protected String targetInputPrompt;
@@ -1157,7 +1156,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         @Override
         public boolean isCaptionAsHtml() {
             if (component instanceof HasHtmlCaption) {
-                ((HasHtmlCaption) component).isCaptionAsHtml();
+                return ((HasHtmlCaption) component).isCaptionAsHtml();
             }
             return targetCaptionAsHtml;
         }
@@ -1189,12 +1188,19 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
-        public void setDescription(String description, ContentMode contentMode) {
-            if (component instanceof HasDescriptionContentMode) {
-                ((HasDescriptionContentMode) component).setDescription(description, contentMode);
+        public boolean isDescriptionAsHtml() {
+            if (component instanceof HasHtmlDescription) {
+                return ((HasHtmlDescription) component).isDescriptionAsHtml();
+            }
+            return this.targetDescriptionAsHtml;
+        }
+
+        @Override
+        public void setDescriptionAsHtml(boolean descriptionAsHtml) {
+            if (component instanceof HasHtmlDescription) {
+                ((HasHtmlDescription) component).setDescriptionAsHtml(descriptionAsHtml);
             } else {
-                this.targetDescription = description;
-                this.targetDescriptionContentMode = contentMode;
+                this.targetDescriptionAsHtml = descriptionAsHtml;
             }
         }
 
@@ -1443,12 +1449,12 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             this.targetDescription = targetDescription;
         }
 
-        public ContentMode getTargetDescriptionContentMode() {
-            return this.targetDescriptionContentMode;
+        public Boolean getTargetDescriptionAsHtml() {
+            return this.targetDescriptionAsHtml;
         }
 
-        public void setTargetDescriptionContentMode(ContentMode targetDescriptionContentMode) {
-            this.targetDescriptionContentMode = targetDescriptionContentMode;
+        public void setTargetDescriptionAsHtml(Boolean targetDescriptionAsHtml) {
+            this.targetDescriptionAsHtml = targetDescriptionAsHtml;
         }
 
         public String getTargetInputPrompt() {
