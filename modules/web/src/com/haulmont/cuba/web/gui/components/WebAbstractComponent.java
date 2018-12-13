@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         implements Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.HasIcon,
-                   Component.HasCaption, HasDebugId, HasContextHelp {
+                   Component.HasCaption, HasDebugId, HasContextHelp, HasHtmlCaption, HasDescriptionContentMode {
 
     public static final String ICON_STYLE = "icon";
 
@@ -234,6 +234,16 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return ((AbstractComponent) component).isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        ((AbstractComponent) component).setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
@@ -241,6 +251,11 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setDescription(String description) {
         ((AbstractComponent) component).setDescription(description);
+    }
+
+    @Override
+    public void setDescription(String description, ContentMode contentMode) {
+        ((AbstractComponent) component).setDescription(description, WebWrapperUtils.toVaadinContentMode(contentMode));
     }
 
     @Override

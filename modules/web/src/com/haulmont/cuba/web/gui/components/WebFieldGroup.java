@@ -334,9 +334,20 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 hasCaption.setCaption(fci.getTargetCaption());
             }
 
+            if (fieldComponent instanceof HasHtmlCaption
+                    && fci.getTargetCaptionAsHtml() != null) {
+                ((HasHtmlCaption) hasCaption).setCaptionAsHtml(fci.getTargetCaptionAsHtml());
+            }
+
             if (fci.getTargetDescription() != null) {
                 // we check empty for description since Vaadin components have "" description by default
-                hasCaption.setDescription(fci.getTargetDescription());
+                if (fieldComponent instanceof HasDescriptionContentMode
+                        && fci.getTargetDescriptionContentMode() != null) {
+                    ((HasDescriptionContentMode) hasCaption)
+                            .setDescription(fci.getTargetDescription(), fci.getTargetDescriptionContentMode());
+                } else {
+                    hasCaption.setDescription(fci.getTargetDescription());
+                }
             }
         }
 
@@ -804,7 +815,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         protected String targetRequiredMessage;
         protected CollectionDatasource targetOptionsDatasource;
         protected String targetCaption;
+        protected boolean targetCaptionAsHtml;
         protected String targetDescription;
+        protected ContentMode targetDescriptionContentMode;
         protected String targetContextHelpText;
         protected Boolean targetContextHelpTextHtmlEnabled;
         protected String targetInputPrompt;
@@ -1142,6 +1155,23 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
         }
 
         @Override
+        public boolean isCaptionAsHtml() {
+            if (component instanceof HasHtmlCaption) {
+                ((HasHtmlCaption) component).isCaptionAsHtml();
+            }
+            return targetCaptionAsHtml;
+        }
+
+        @Override
+        public void setCaptionAsHtml(boolean captionAsHtml) {
+            if (component instanceof HasHtmlCaption) {
+                ((HasHtmlCaption) component).setCaptionAsHtml(captionAsHtml);
+            } else {
+                this.targetCaptionAsHtml = captionAsHtml;
+            }
+        }
+
+        @Override
         public String getDescription() {
             if (component instanceof HasCaption) {
                 return ((HasCaption) component).getDescription();
@@ -1155,6 +1185,16 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 ((HasCaption) component).setDescription(description);
             } else {
                 this.targetDescription = description;
+            }
+        }
+
+        @Override
+        public void setDescription(String description, ContentMode contentMode) {
+            if (component instanceof HasDescriptionContentMode) {
+                ((HasDescriptionContentMode) component).setDescription(description, contentMode);
+            } else {
+                this.targetDescription = description;
+                this.targetDescriptionContentMode = contentMode;
             }
         }
 
@@ -1387,12 +1427,28 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             this.targetCaption = targetCaption;
         }
 
+        public Boolean getTargetCaptionAsHtml() {
+            return targetCaptionAsHtml;
+        }
+
+        public void setTargetCaptionAsHtnl(Boolean targetCaptionAsHtml) {
+            this.targetCaption = targetCaption;
+        }
+
         public String getTargetDescription() {
             return targetDescription;
         }
 
         public void setTargetDescription(String targetDescription) {
             this.targetDescription = targetDescription;
+        }
+
+        public ContentMode getTargetDescriptionContentMode() {
+            return this.targetDescriptionContentMode;
+        }
+
+        public void setTargetDescriptionContentMode(ContentMode targetDescriptionContentMode) {
+            this.targetDescriptionContentMode = targetDescriptionContentMode;
         }
 
         public String getTargetInputPrompt() {
