@@ -37,7 +37,6 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -986,7 +985,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected String getWindowId(Context context) {
         Frame frame = context.getFrame();
-        Screen hostScreen = UiControllerUtils.getHostScreen((ScreenFragment) frame.getFrameOwner());
-        return hostScreen.getId();
+        Screen screen = UiControllerUtils.getScreen(frame.getFrameOwner());
+        return screen.getId();
     }
 }
