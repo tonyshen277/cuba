@@ -1283,7 +1283,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return fieldDatasource;
     }
 
-    protected ValueSourceProvider createValueSourceProvider(E item) {
+    protected InstanceContainer<E> createInstanceContainer(E item) {
         EntityDataGridItems<E> items = getEntityDataGridItemsNN();
         DataComponents factory = beanLocator.get(DataComponents.class);
         ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
@@ -1293,6 +1293,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         instanceContainer.setView(viewRepository.getView(metaClass, View.LOCAL));
         instanceContainer.setItem(item);
 
+        return instanceContainer;
+    }
+
+    protected ValueSourceProvider createValueSourceProvider(E item) {
+        InstanceContainer<E> instanceContainer = createInstanceContainer(item);
         return new ContainerValueSourceProvider<>(instanceContainer);
     }
 
@@ -1307,7 +1312,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             this.fieldFactory = fieldFactory;
         }
 
-        @Nullable
         @Override
         public CubaEditorField<?> createField(E bean, Grid.Column<E, ?> gridColumn) {
             ColumnImpl<E> column = dataGrid.getColumnByGridColumn(gridColumn);
@@ -1321,11 +1325,14 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 EditorFieldGenerationContext<E> context = new EditorFieldGenerationContext<>(bean, valueSourceProvider);
                 columnComponent = column.getEditFieldGenerator().apply(context);
             } else {
-                Datasource fieldDatasource = dataGrid.createItemDatasource(bean);
                 String fieldPropertyId = String.valueOf(column.getPropertyId());
-                columnComponent = column.getEditorFieldGenerator() != null
-                        ? column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId)
-                        : fieldFactory.createField(fieldDatasource, fieldPropertyId);
+                if (column.getEditorFieldGenerator() != null) {
+                    Datasource fieldDatasource = dataGrid.createItemDatasource(bean);
+                    columnComponent = column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId);
+                } else {
+                    InstanceContainer<E> container = dataGrid.createInstanceContainer(bean);
+                    columnComponent = fieldFactory.createField(container, fieldPropertyId);
+                }
             }
 
             columnComponent.setParent(dataGrid);

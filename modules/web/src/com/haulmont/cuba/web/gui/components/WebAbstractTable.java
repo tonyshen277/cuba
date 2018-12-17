@@ -560,7 +560,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         InstanceContainer<E> instanceContainer = (InstanceContainer<E>) fieldDatasources.get(item);
 
         if (instanceContainer == null) {
-            ContainerTableItems containerTableItems = (ContainerTableItems) getItems();
+            EntityTableItems containerTableItems = (EntityTableItems) getItems();
 
             instanceContainer = dataComponents.createInstanceContainer(containerTableItems.getEntityMetaClass().getJavaClass());
             View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");
@@ -1115,7 +1115,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected WebTableFieldFactory createFieldFactory() {
-        return new WebTableFieldFactory(this, security, metadataTools);
+        return new WebTableFieldFactory<>(this, security, metadataTools);
     }
 
     protected void setClientCaching(T component) {

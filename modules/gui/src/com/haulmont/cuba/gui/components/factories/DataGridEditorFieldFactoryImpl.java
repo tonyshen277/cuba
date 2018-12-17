@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import javax.inject.Inject;
 
@@ -31,16 +32,27 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
 
     @Override
     public Field createField(Datasource datasource, String property) {
-        return createFieldComponent(datasource, property);
-    }
-
-    protected Field createFieldComponent(Datasource datasource, String property) {
         MetaClass metaClass = resolveMetaClass(datasource);
 
         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
                 .setDatasource(datasource)
                 .setComponentClass(DataGrid.class);
 
+        return createFieldComponent(context);
+    }
+
+    @Override
+    public Field createField(InstanceContainer container, String property) {
+        MetaClass metaClass = container.getEntityMetaClass();
+
+        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
+                .setContainer(container)
+                .setComponentClass(DataGrid.class);
+
+        return createFieldComponent(context);
+    }
+
+    protected Field createFieldComponent(ComponentGenerationContext context) {
         Component component = uiComponentsGenerator.generate(context);
         if (component instanceof Field) {
             return (Field) component;

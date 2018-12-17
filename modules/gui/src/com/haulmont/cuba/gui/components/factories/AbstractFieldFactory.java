@@ -22,6 +22,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -43,11 +45,28 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return componentsGenerator.generate(context);
     }
 
+    @Override
+    public Component createField(InstanceContainer container, String property, Element xmlDescriptor) {
+        MetaClass metaClass = container.getEntityMetaClass();
+
+        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
+                .setContainer(container)
+                .setOptionsContainer(getOptionsContainer(container, property))
+                .setXmlDescriptor(xmlDescriptor)
+                .setComponentClass(Table.class);
+
+        return componentsGenerator.generate(context);
+    }
+
     protected MetaClass resolveMetaClass(Datasource datasource) {
         return datasource instanceof RuntimePropsDatasource ?
                 ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
     }
 
+    @Deprecated
     @Nullable
     protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
+
+    @Nullable
+    protected abstract CollectionContainer getOptionsContainer(InstanceContainer container, String property);
 }

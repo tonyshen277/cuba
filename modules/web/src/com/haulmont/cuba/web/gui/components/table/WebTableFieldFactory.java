@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components.table;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -26,10 +27,16 @@ import com.haulmont.cuba.gui.components.Component.BelongToFrame;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.factories.AbstractFieldFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -39,17 +46,18 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
-    protected WebAbstractTable<?, ?> webTable;
+public class WebTableFieldFactory<E extends Entity> extends AbstractFieldFactory implements TableFieldFactory {
+    protected WebAbstractTable<?, E> webTable;
     protected Security security;
     protected MetadataTools metadataTools;
 
-    public WebTableFieldFactory(WebAbstractTable<?, ?> webTable, Security security, MetadataTools metadataTools) {
+    public WebTableFieldFactory(WebAbstractTable<?, E> webTable, Security security, MetadataTools metadataTools) {
         this.webTable = webTable;
         this.security = security;
         this.metadataTools = metadataTools;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public com.vaadin.v7.ui.Field<?> createField(com.vaadin.v7.data.Container container,
                                                  Object itemId, Object propertyId, Component uiContext) {
@@ -59,11 +67,11 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
         Table.Column columnConf = webTable.getColumnsInternal().get(propertyId);
 
         TableDataContainer tableDataContainer = (TableDataContainer) container;
-        Entity entity = (Entity) tableDataContainer.getInternalItem(itemId);
-        Datasource fieldDatasource = webTable.getItemDatasource(entity);
+        Entity entity  = (Entity) tableDataContainer.getInternalItem(itemId);
+        InstanceContainer instanceContainer = webTable.getInstanceContainer((E) entity);
 
         com.haulmont.cuba.gui.components.Component columnComponent =
-                createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
+                createField(instanceContainer, fieldPropertyId, columnConf.getXmlDescriptor());
 
         if (columnComponent instanceof Field) {
             Field cubaField = (Field) columnComponent;
@@ -118,15 +126,15 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
     }
 
     protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
-        if (columnComponent instanceof DatasourceComponent
+        if (columnComponent instanceof HasValueSource
                 && columnComponent instanceof com.haulmont.cuba.gui.components.Component.Editable) {
-            DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
-            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
+            HasValueSource component = (HasValueSource) columnComponent;
+            MetaPropertyPath propertyPath = ((EntityValueSource) component.getValueSource()).getMetaPropertyPath();
 
             if (propertyPath != null) {
-                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                MetaClass metaClass = ((EntityValueSource) component.getValueSource()).getEntityMetaClass();
                 com.haulmont.cuba.gui.components.Component.Editable editable =
-                        (com.haulmont.cuba.gui.components.Component.Editable) dsComponent;
+                        (com.haulmont.cuba.gui.components.Component.Editable) component;
 
                 editable.setEditable(editable.isEditable()
                         && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
@@ -159,6 +167,31 @@ public class WebTableFieldFactory extends AbstractFieldFactory implements TableF
             }
 
             return ds;
+        }
+    }
+
+    @Nullable
+    @Override
+    protected CollectionContainer getOptionsContainer(InstanceContainer instanceContainer, String property) {
+        MetaClass metaClass = instanceContainer.getEntityMetaClass();
+        MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
+        Table.Column columnConf = webTable.getColumnsInternal().get(metaPropertyPath);
+
+        String optDcName = columnConf.getXmlDescriptor() != null ?
+                columnConf.getXmlDescriptor().attributeValue("optionsContainer") : null;
+
+        if (Strings.isNullOrEmpty(optDcName)) {
+            return null;
+        } else {
+            ScreenData screenData = UiControllerUtils.getScreenData(webTable.getFrame().getFrameOwner());
+            InstanceContainer container = screenData.getContainer(optDcName);
+
+            if (container instanceof CollectionContainer) {
+                return (CollectionContainer) container;
+            }
+
+            throw new IllegalStateException(
+                    String.format("'%s' is not an instance of CollectionContainer", optDcName));
         }
     }
 }

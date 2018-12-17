@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 
 /**
  * Factory that generates components for {@link DataGrid} editor.
@@ -31,6 +32,18 @@ public interface DataGridEditorFieldFactory {
      * @param property   editing item property
      * @return generated component
      * @throws IllegalStateException if created component doesn't implement the {@link Field} interface
+     * @deprecated Use {@link #createField(InstanceContainer, String)} instead
      */
+    @Deprecated
     Field createField(Datasource datasource, String property);
+
+    /**
+     * Generates component for {@link DataGrid} editor.
+     *
+     * @param container editing item instance container
+     * @param property  editing item property
+     * @return generated component
+     * @throws IllegalStateException if created component doesn't implement the {@link Field} interface
+     */
+    Field createField(InstanceContainer container, String property);
 }

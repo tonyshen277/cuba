@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.dom4j.Element;
 
 public interface FieldFactory {
@@ -29,6 +30,18 @@ public interface FieldFactory {
      * @param property      a property
      * @param xmlDescriptor an xml descriptor
      * @return created component
+     * @deprecated Use {@link #createField(InstanceContainer, String, Element)} instead
      */
+    @Deprecated
     Component createField(Datasource datasource, String property, Element xmlDescriptor);
+
+    /**
+     * Creates a component for {@link Table}.
+     *
+     * @param container     an instance container
+     * @param property      a property
+     * @param xmlDescriptor an xml descriptor
+     * @return created component
+     */
+    Component createField(InstanceContainer container, String property, Element xmlDescriptor);
 }
