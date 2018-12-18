@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -53,11 +52,6 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 .setComponentClass(Table.class);
 
         return componentsGenerator.generate(context);
-    }
-
-    protected MetaClass resolveMetaClass(Datasource datasource) {
-        return datasource instanceof RuntimePropsDatasource ?
-                ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
     }
 
     @Nullable

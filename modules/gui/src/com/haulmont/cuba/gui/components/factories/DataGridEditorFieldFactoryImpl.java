@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.UiComponentsGenerator;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 
 import javax.inject.Inject;
 
@@ -56,10 +55,5 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
         }
 
         throw new IllegalStateException("Editor field must implement com.haulmont.cuba.gui.components.Field");
-    }
-
-    protected MetaClass resolveMetaClass(Datasource datasource) {
-        return datasource instanceof RuntimePropsDatasource ?
-                ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
     }
 }
