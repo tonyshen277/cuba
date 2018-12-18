@@ -18,13 +18,17 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * A class which stores information that can be used
@@ -37,8 +41,8 @@ public class ComponentGenerationContext {
     protected Datasource datasource;
     @Deprecated
     protected CollectionDatasource optionsDatasource;
-    protected InstanceContainer container;
-    protected CollectionContainer optionsContainer;
+    protected ValueSource valueSource;
+    protected Options options;
     protected Element xmlDescriptor;
     protected Class componentClass;
 
@@ -49,6 +53,9 @@ public class ComponentGenerationContext {
      * @param property  the entity attribute for which the component is created
      */
     public ComponentGenerationContext(MetaClass metaClass, String property) {
+        checkNotNullArgument(metaClass);
+        checkNotNullArgument(property);
+
         this.metaClass = metaClass;
         this.property = property;
     }
@@ -91,7 +98,7 @@ public class ComponentGenerationContext {
 
     /**
      * @return a datasource that can be used to create the component
-     * @deprecated Use {@link #getContainer()} instead
+     * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
     @Nullable
@@ -104,7 +111,7 @@ public class ComponentGenerationContext {
      *
      * @param datasource a datasource
      * @return this object
-     * @deprecated Use {@link #setContainer(InstanceContainer)} instead
+     * @deprecated Use {@link #setValueSource(ValueSource)} instead
      */
     @Deprecated
     public ComponentGenerationContext setDatasource(Datasource datasource) {
@@ -114,7 +121,7 @@ public class ComponentGenerationContext {
 
     /**
      * @return a datasource that can be used to show options
-     * @deprecated Use {@link #getOptionsContainer()} instead
+     * @deprecated Use {@link #getOptions()} instead
      */
     @Deprecated
     @Nullable
@@ -127,7 +134,7 @@ public class ComponentGenerationContext {
      *
      * @param optionsDatasource a datasource that can be used as optional to create the component
      * @return this object
-     * @deprecated Use {@link #setOptionsContainer(CollectionContainer)} instead
+     * @deprecated Use {@link #setOptions(Options)} instead
      */
     @Deprecated
     public ComponentGenerationContext setOptionsDatasource(CollectionDatasource optionsDatasource) {
@@ -136,41 +143,46 @@ public class ComponentGenerationContext {
     }
 
     /**
-     *
-     * @return a container that can be used to create the component
+     * @return a value source that can be used to create the component
      */
+    @SuppressWarnings("unchecked")
     @Nullable
-    public InstanceContainer getContainer() {
-        return container;
+    public ValueSource getValueSource() {
+        return valueSource == null && datasource != null
+                ? new DatasourceValueSource(datasource, property)
+                : valueSource;
     }
 
     /**
-     * Sets a container, using fluent API method.
+     * Sets a value source, using fluent API method.
      *
-     * @param container a container to set
+     * @param valueSource a value source to set
      * @return this object
      */
-    public ComponentGenerationContext setContainer(InstanceContainer container) {
-        this.container = container;
+    public ComponentGenerationContext setValueSource(ValueSource valueSource) {
+        this.valueSource = valueSource;
         return this;
     }
 
     /**
-     * @return a container that can be used to show options
+     * @return an options object
      */
+    @SuppressWarnings("unchecked")
     @Nullable
-    public CollectionContainer getOptionsContainer() {
-        return optionsContainer;
+    public Options getOptions() {
+        return options == null && optionsDatasource != null
+                ? new DatasourceOptions(optionsDatasource)
+                : options;
     }
 
     /**
-     * Sets a container that can be used to show options, using fluent API method.
+     * Sets an options object, using fluent API method.
      *
-     * @param optionsContainer a container that can be used as optional to create the component
+     * @param options an options object that can be used as optional to create the component
      * @return this object
      */
-    public ComponentGenerationContext setOptionsContainer(CollectionContainer optionsContainer) {
-        this.optionsContainer = optionsContainer;
+    public ComponentGenerationContext setOptions(Options options) {
+        this.options = options;
         return this;
     }
 

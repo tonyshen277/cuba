@@ -72,7 +72,7 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     @SuppressWarnings("unchecked")
     @Override
     protected Field createEntityField(ComponentGenerationContext context, MetaPropertyPath mpp) {
-        Options options = getOptions(context);
+        Options options = context.getOptions();
 
         if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
             DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();

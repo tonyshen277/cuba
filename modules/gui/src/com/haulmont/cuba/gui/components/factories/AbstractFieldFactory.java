@@ -18,12 +18,16 @@ package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentGenerationContext;
+import com.haulmont.cuba.gui.components.FieldFactory;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.UiComponentsGenerator;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -32,26 +36,19 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected UiComponentsGenerator componentsGenerator = AppBeans.get(UiComponentsGenerator.NAME);
 
+    @SuppressWarnings("unchecked")
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
-        MetaClass metaClass = resolveMetaClass(datasource);
-
-        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
-                .setDatasource(datasource)
-                .setOptionsDatasource(getOptionsDatasource(datasource, property))
-                .setXmlDescriptor(xmlDescriptor)
-                .setComponentClass(Table.class);
-
-        return componentsGenerator.generate(context);
+        return createField(new DatasourceValueSource(datasource, property), property, xmlDescriptor);
     }
 
     @Override
-    public Component createField(InstanceContainer container, String property, Element xmlDescriptor) {
-        MetaClass metaClass = container.getEntityMetaClass();
+    public Component createField(EntityValueSource valueSource, String property, Element xmlDescriptor) {
+        MetaClass metaClass = valueSource.getEntityMetaClass();
 
         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
-                .setContainer(container)
-                .setOptionsContainer(getOptionsContainer(container, property))
+                .setValueSource(valueSource)
+                .setOptions(getOptions(valueSource, property))
                 .setXmlDescriptor(xmlDescriptor)
                 .setComponentClass(Table.class);
 
@@ -63,10 +60,6 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
     }
 
-    @Deprecated
     @Nullable
-    protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
-
-    @Nullable
-    protected abstract CollectionContainer getOptionsContainer(InstanceContainer container, String property);
+    protected abstract Options getOptions(EntityValueSource container, String property);
 }

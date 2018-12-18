@@ -17,10 +17,16 @@
 package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentGenerationContext;
+import com.haulmont.cuba.gui.components.DataGrid;
+import com.haulmont.cuba.gui.components.DataGridEditorFieldFactory;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.UiComponentsGenerator;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import javax.inject.Inject;
 
@@ -30,29 +36,20 @@ public class DataGridEditorFieldFactoryImpl implements DataGridEditorFieldFactor
     @Inject
     protected UiComponentsGenerator uiComponentsGenerator;
 
+    @SuppressWarnings("unchecked")
     @Override
     public Field createField(Datasource datasource, String property) {
-        MetaClass metaClass = resolveMetaClass(datasource);
-
-        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
-                .setDatasource(datasource)
-                .setComponentClass(DataGrid.class);
-
-        return createFieldComponent(context);
+        return createField(new DatasourceValueSource(datasource, property), property);
     }
 
     @Override
-    public Field createField(InstanceContainer container, String property) {
-        MetaClass metaClass = container.getEntityMetaClass();
+    public Field createField(EntityValueSource valueSource, String property) {
+        MetaClass metaClass = valueSource.getEntityMetaClass();
 
         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
-                .setContainer(container)
+                .setValueSource(valueSource)
                 .setComponentClass(DataGrid.class);
 
-        return createFieldComponent(context);
-    }
-
-    protected Field createFieldComponent(ComponentGenerationContext context) {
         Component component = uiComponentsGenerator.generate(context);
         if (component instanceof Field) {
             return (Field) component;

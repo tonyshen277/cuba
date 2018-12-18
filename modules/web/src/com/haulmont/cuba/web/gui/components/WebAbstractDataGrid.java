@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
@@ -1331,7 +1332,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                     columnComponent = column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId);
                 } else {
                     InstanceContainer<E> container = dataGrid.createInstanceContainer(bean);
-                    columnComponent = fieldFactory.createField(container, fieldPropertyId);
+                    columnComponent = fieldFactory.createField(
+                            new ContainerValueSource<>(container, fieldPropertyId), fieldPropertyId);
                 }
             }
 

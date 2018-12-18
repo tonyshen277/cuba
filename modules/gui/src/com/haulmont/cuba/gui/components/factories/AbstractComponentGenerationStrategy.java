@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.components.factories;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -35,10 +34,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.Options;
-import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
-import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
-import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -324,7 +320,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         }
 
         if (!Boolean.parseBoolean(linkAttribute)) {
-            Options options = getOptions(context);
+            Options options = context.getOptions();
 
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                 DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
@@ -424,27 +420,8 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    protected Options getOptions(ComponentGenerationContext context) {
-        if (context.getOptionsContainer() != null) {
-            return new ContainerOptions<>(context.getOptionsContainer());
-        } else if (context.getOptionsDatasource() != null) {
-            return new DatasourceOptions(context.getOptionsDatasource());
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
     protected void setValueSource(Field field, ComponentGenerationContext context) {
-        String property = context.getProperty();
-        if (!Strings.isNullOrEmpty(property)) {
-            if (context.getContainer() != null) {
-                field.setValueSource(new ContainerValueSource<>(context.getContainer(), property));
-            } else if (context.getDatasource() != null) {
-                field.setValueSource(new DatasourceValueSource(context.getDatasource(), property));
-            }
-        }
+        field.setValueSource(context.getValueSource());
     }
 
     protected static class InvokeEntityLinkClickHandler implements EntityLinkField.EntityLinkClickHandler {
