@@ -44,8 +44,8 @@ public class CustomDatatypesComponentGenerationStrategy extends AbstractComponen
     }
 
     @Inject
-    public void setComponentsFactory(UiComponents componentsFactory) {
-        this.componentsFactory = componentsFactory;
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
     }
 
     @Nullable

@@ -36,8 +36,8 @@ public class DefaultComponentGenerationStrategy extends AbstractComponentGenerat
     }
 
     @Inject
-    public void setComponentsFactory(UiComponents componentsFactory) {
-        this.componentsFactory = componentsFactory;
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
     }
 
     @Nullable

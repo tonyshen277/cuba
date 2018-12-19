@@ -54,7 +54,7 @@ import static com.haulmont.cuba.gui.components.DateField.Resolution;
 public abstract class AbstractComponentGenerationStrategy implements ComponentGenerationStrategy {
 
     protected Messages messages;
-    protected UiComponents componentsFactory;
+    protected UiComponents uiComponents;
     protected DynamicAttributesTools dynamicAttributesTools;
 
     public AbstractComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
@@ -140,7 +140,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Component createDatatypeLinkField(ComponentGenerationContext context) {
-        EntityLinkField linkField = componentsFactory.create(EntityLinkField.class);
+        EntityLinkField linkField = uiComponents.create(EntityLinkField.class);
 
         setValueSource(linkField, context);
         setLinkFieldAttributes(linkField, context);
@@ -149,13 +149,13 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Field createEnumField(ComponentGenerationContext context) {
-        LookupField component = componentsFactory.create(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
         setValueSource(component, context);
         return component;
     }
 
     protected Component createMaskedField(ComponentGenerationContext context) {
-        MaskedField maskedField = componentsFactory.create(MaskedField.class);
+        MaskedField maskedField = uiComponents.create(MaskedField.class);
         setValueSource(maskedField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -180,7 +180,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         if (xmlDescriptor != null) {
             final String rows = xmlDescriptor.attributeValue("rows");
             if (!StringUtils.isEmpty(rows)) {
-                TextArea textArea = componentsFactory.create(TextArea.class);
+                TextArea textArea = uiComponents.create(TextArea.class);
                 textArea.setRows(Integer.parseInt(rows));
                 textField = textArea;
             }
@@ -190,14 +190,14 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(mpp.getMetaProperty());
             if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.STRING
                     && categoryAttribute.getRowsCount() != null && categoryAttribute.getRowsCount() > 1) {
-                TextArea textArea = componentsFactory.create(TextArea.class);
+                TextArea textArea = uiComponents.create(TextArea.class);
                 textArea.setRows(categoryAttribute.getRowsCount());
                 textField = textArea;
             }
         }
 
         if (textField == null) {
-            textField = componentsFactory.create(TextField.class);
+            textField = uiComponents.create(TextField.class);
         }
 
         setValueSource(textField, context);
@@ -211,7 +211,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Field createUuidField(ComponentGenerationContext context) {
-        MaskedField maskedField = componentsFactory.create(MaskedField.class);
+        MaskedField maskedField = uiComponents.create(MaskedField.class);
         setValueSource(maskedField, context);
         maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");
         maskedField.setSendNullRepresentation(false);
@@ -219,13 +219,13 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Field createBooleanField(ComponentGenerationContext context) {
-        CheckBox component = componentsFactory.create(CheckBox.class);
+        CheckBox component = uiComponents.create(CheckBox.class);
         setValueSource(component, context);
         return component;
     }
 
     protected Component createDateField(ComponentGenerationContext context) {
-        DateField dateField = componentsFactory.create(DateField.class);
+        DateField dateField = uiComponents.create(DateField.class);
         setValueSource(dateField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -256,7 +256,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Component createTimeField(ComponentGenerationContext context) {
-        TimeField timeField = componentsFactory.create(TimeField.class);
+        TimeField timeField = uiComponents.create(TimeField.class);
         setValueSource(timeField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -271,7 +271,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     }
 
     protected Field createNumberField(ComponentGenerationContext context) {
-        TextField component = componentsFactory.create(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
         setValueSource(component, context);
         return component;
     }
@@ -286,13 +286,13 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
             return null;
         }
 
-        CurrencyField component = componentsFactory.create(CurrencyField.class);
+        CurrencyField component = uiComponents.create(CurrencyField.class);
         setValueSource(component, context);
         return component;
     }
 
     protected Field createFileUploadField(ComponentGenerationContext context) {
-        FileUploadField fileUploadField = componentsFactory.create(FileUploadField.NAME);
+        FileUploadField fileUploadField = uiComponents.create(FileUploadField.NAME);
         fileUploadField.setMode(FileUploadField.FileStoragePutMode.IMMEDIATE);
 
         fileUploadField.setUploadButtonCaption(null);
@@ -336,7 +336,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
             PickerField pickerField;
             if (options == null) {
-                pickerField = componentsFactory.create(PickerField.class);
+                pickerField = uiComponents.create(PickerField.class);
                 setValueSource(pickerField, context);
 
                 if (mpp.getMetaProperty().getType() == MetaProperty.Type.ASSOCIATION) {
@@ -359,7 +359,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                     pickerField.addClearAction();
                 }
             } else {
-                LookupPickerField lookupPickerField = componentsFactory.create(LookupPickerField.class);
+                LookupPickerField lookupPickerField = uiComponents.create(LookupPickerField.class);
 
                 setValueSource(lookupPickerField, context);
                 lookupPickerField.setOptions(options);
@@ -379,7 +379,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
             return pickerField;
         } else {
-            EntityLinkField linkField = componentsFactory.create(EntityLinkField.class);
+            EntityLinkField linkField = uiComponents.create(EntityLinkField.class);
 
             setValueSource(linkField, context);
             setLinkFieldAttributes(linkField, context);

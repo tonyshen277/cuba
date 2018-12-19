@@ -47,8 +47,8 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     }
 
     @Inject
-    public void setComponentsFactory(UiComponents componentsFactory) {
-        this.componentsFactory = componentsFactory;
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
     }
 
     @Nullable
@@ -64,7 +64,7 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
 
     @Override
     protected Component createStringField(ComponentGenerationContext context, MetaPropertyPath mpp) {
-        TextField component = componentsFactory.create(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
         setValueSource(component, context);
         return component;
     }
@@ -88,7 +88,7 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
 
         PickerField pickerField;
         if (options == null) {
-            pickerField = componentsFactory.create(PickerField.class);
+            pickerField = uiComponents.create(PickerField.class);
             setValueSource(pickerField, context);
             pickerField.addLookupAction();
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
@@ -109,7 +109,7 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
                 pickerField.addClearAction();
             }
         } else {
-            LookupPickerField lookupPickerField = componentsFactory.create(LookupPickerField.class);
+            LookupPickerField lookupPickerField = uiComponents.create(LookupPickerField.class);
             setValueSource(lookupPickerField, context);
             lookupPickerField.setOptions(options);
 
