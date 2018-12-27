@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.format;
+
 @Component(ScreensLinkHandlerProcessor.NAME)
 public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordered {
     public static final String NAME = "cuba_ScreensLinkHandlerProcessor";
@@ -43,6 +45,8 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
     protected AccessDeniedHandler accessDeniedHandler;
     @Inject
     protected NoSuchScreenHandler noSuchScreenHandler;
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Override
     public boolean canHandle(ExternalLinkContext linkContext) {
@@ -137,8 +141,11 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
             return metadata.create(info.getMetaClass());
         }
 
+        String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntityFromLink(info.getMetaClass());
         @SuppressWarnings("unchecked")
-        LoadContext<Entity> ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+        LoadContext<Entity> ctx = new LoadContext(info.getMetaClass());
+        ctx.setQueryString(format("select e from %s e where e.%s = :entityId", info.getMetaClass().getName(), pkName))
+                .setParameter("entityId", info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());
         Entity entity;

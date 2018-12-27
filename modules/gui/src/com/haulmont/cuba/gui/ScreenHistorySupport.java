@@ -44,11 +44,13 @@ public class ScreenHistorySupport {
     protected Metadata metadata;
     protected Messages messages;
     protected Configuration configuration;
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     public ScreenHistorySupport() {
         metadata = AppBeans.get(Metadata.NAME);
         messages = AppBeans.get(Messages.NAME);
         configuration = AppBeans.get(Configuration.NAME);
+        referenceToEntitySupport = AppBeans.get(ReferenceToEntitySupport.NAME);
 
         String property = configuration.getConfig(ClientConfig.class).getScreenIdsToSaveHistory();
         if (StringUtils.isNotBlank(property)) {
@@ -74,7 +76,7 @@ public class ScreenHistorySupport {
                 && (screenIds == null || screenIds.contains(window.getId())))
         {
             String caption = window.getCaption();
-            UUID entityId = null;
+            Object entityId = null;
             Frame frame = window.getFrame();
             Entity entity = null;
             if (frame instanceof Window.Editor) {
@@ -85,13 +87,13 @@ public class ScreenHistorySupport {
                     }
                     if (StringUtils.isBlank(caption))
                         caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
-                    entityId = (UUID) entity.getId();
+                    entityId = referenceToEntitySupport.getReferenceIdForLink(entity);
                 }
             }
             ScreenHistoryEntity screenHistoryEntity = metadata.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
             screenHistoryEntity.setUrl(makeLink(window));
-            screenHistoryEntity.setEntityId(entityId);
+            screenHistoryEntity.setObjectEntityId(entityId);
             addAdditionalFields(screenHistoryEntity, entity);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
@@ -110,8 +112,14 @@ public class ScreenHistorySupport {
             entity = ((Window.Editor) window.getFrame()).getItem();
         String url = configuration.getConfig(GlobalConfig.class).getWebAppUrl() + "/open?" +
                 "screen=" + window.getFrame().getId();
+        Object entityId = referenceToEntitySupport.getReferenceIdForLink(entity);
         if (entity != null) {
-            String item = metadata.getSession().getClassNN(entity.getClass()).getName() + "-" + entity.getId();
+            String item;
+            if (entityId instanceof String) {
+                item = metadata.getClassNN(entity.getClass()).getName() + "-{" + entityId + "}";
+            } else {
+                item = metadata.getClassNN(entity.getClass()).getName() + "-" + entityId;
+            }
             url += "&" + "item=" + item + "&" + "params=item:" + item;
         }
         Map<String, Object> params = getWindowParams(window);
