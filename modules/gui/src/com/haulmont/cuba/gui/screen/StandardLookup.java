@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  *
  * @param <T> type of entity
  */
-public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T>, MultiSelectScreen {
+public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T>, MultiSelectLookupScreen {
     protected Consumer<Collection<T>> selectHandler;
     protected Predicate<ValidationContext<T>> selectValidator;
 
@@ -166,7 +166,7 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     }
 
     @Override
-    public void setMultiSelect(boolean multiSelect) {
+    public void setLookupComponentMultiSelect(boolean multiSelect) {
         LookupComponent<T> lookupComponent = getLookupComponent();
         if (lookupComponent instanceof Table) {
             ((Table<T>) lookupComponent).setMultiSelect(multiSelect);

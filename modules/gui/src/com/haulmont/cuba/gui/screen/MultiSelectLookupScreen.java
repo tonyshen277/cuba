@@ -19,12 +19,12 @@ package com.haulmont.cuba.gui.screen;
 /**
  * A screen that can change selection mode of lookup component.
  */
-public interface MultiSelectScreen {
+public interface MultiSelectLookupScreen {
 
     /**
      * Informs a screen that a lookup component should change its selection mode, if possible.
      *
      * @param multiSelect {@code true} to enable multiple selections, {@code false} otherwise
      */
-    void setMultiSelect(boolean multiSelect);
+    void setLookupComponentMultiSelect(boolean multiSelect);
 }
