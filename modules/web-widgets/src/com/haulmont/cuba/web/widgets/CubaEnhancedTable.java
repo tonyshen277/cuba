@@ -146,6 +146,8 @@ public interface CubaEnhancedTable extends AggregationContainer {
      */
     boolean getColumnCaptionAsHtml(Object columnId);
 
+    Object getItemByRowKey(String rowKey);
+
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);
     }

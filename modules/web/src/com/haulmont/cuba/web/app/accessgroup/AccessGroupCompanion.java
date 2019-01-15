@@ -21,11 +21,18 @@ import com.haulmont.cuba.gui.app.security.group.browse.GroupChangeEvent;
 import com.haulmont.cuba.gui.app.security.group.browse.UserGroupChangedEvent;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.widgets.CubaTable;
+import com.haulmont.cuba.web.widgets.CubaTableDragSourceExtension;
 import com.haulmont.cuba.web.widgets.CubaTree;
+import com.vaadin.shared.ui.grid.DropMode;
+import com.vaadin.ui.components.grid.TreeGridDropTarget;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class AccessGroupCompanion implements GroupBrowser.Companion {
@@ -34,8 +41,35 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
     public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
                                 Consumer<UserGroupChangedEvent> userGroupChangedHandler,
                                 Consumer<GroupChangeEvent> groupChangeEventHandler) {
-        com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
-        vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
+        CubaTable vTable = usersTable.unwrap(CubaTable.class);
+
+        CubaTableDragSourceExtension<CubaTable> dragTable = new CubaTableDragSourceExtension<>(vTable);
+
+        //noinspection unchecked
+        CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
+        TreeGridDropTarget<Group> treeGridDropTarget = new TreeGridDropTarget<>(vTree.getCompositionRoot(), DropMode.ON_TOP_OR_BETWEEN);
+        treeGridDropTarget.addTreeGridDropListener(event -> {
+            if (event.getDragSourceExtension().isPresent()) {
+                //noinspection unchecked
+                CubaTableDragSourceExtension<CubaTable> sourceExtension =
+                        (CubaTableDragSourceExtension<CubaTable>) event.getDragSourceExtension().get();
+
+                List<Object> itemIds = sourceExtension.getLastTransferredItems();
+                TableItems<User> tableItems = usersTable.getItems();
+
+
+                List<User> users = new ArrayList<>();
+                for (Object id : itemIds) {
+                    users.add(tableItems.getItem(id));
+                }
+
+                if (event.getDropTargetRow().isPresent()) {
+                    Group group = event.getDropTargetRow().get();
+                    userGroupChangedHandler.accept(new UserGroupChangedEvent(groupsTree, users, group));
+                }
+            }
+        });
+
 
         /*CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
         // TODO: gg, re-implement
