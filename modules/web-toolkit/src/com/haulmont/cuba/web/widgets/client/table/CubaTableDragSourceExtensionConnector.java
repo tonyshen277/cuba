@@ -113,7 +113,6 @@ public class CubaTableDragSourceExtensionConnector extends DragSourceExtensionCo
         return super.createDataTransferData(dragStartEvent);
     }
 
-
     private List<String> getDraggedRows(NativeEvent dragStartEvent) {
         List<String> draggedRows = new ArrayList<>();
 
