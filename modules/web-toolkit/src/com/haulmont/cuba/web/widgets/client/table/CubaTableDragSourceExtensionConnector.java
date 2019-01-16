@@ -108,7 +108,7 @@ public class CubaTableDragSourceExtensionConnector extends DragSourceExtensionCo
     @Override
     protected Map<String, String> createDataTransferData(NativeEvent dragStartEvent) {
         getRpcProxy(CubaTableDragSourceExtensionServerRpc.class)
-                .updateTransferredItems(getDraggedRows(dragStartEvent));
+                .updateDraggedItems(getDraggedRows(dragStartEvent));
 
         return super.createDataTransferData(dragStartEvent);
     }

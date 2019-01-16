@@ -71,7 +71,7 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                 CubaTableDragSourceExtension<CubaTable> sourceExtension =
                         (CubaTableDragSourceExtension<CubaTable>) event.getDragSourceExtension().get();
 
-                List<Object> itemIds = sourceExtension.getLastTransferredItems();
+                List<Object> itemIds = sourceExtension.getLastDraggedItemIds();
                 TableItems<User> tableItems = usersTable.getItems();
 
                 List<User> users = new ArrayList<>();

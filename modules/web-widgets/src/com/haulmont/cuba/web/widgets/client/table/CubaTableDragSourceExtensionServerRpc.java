@@ -22,5 +22,5 @@ import java.util.List;
 
 public interface CubaTableDragSourceExtensionServerRpc extends ServerRpc {
 
-    void updateTransferredItems(List<String> rowKeys);
+    void updateDraggedItems(List<String> rowKeys);
 }

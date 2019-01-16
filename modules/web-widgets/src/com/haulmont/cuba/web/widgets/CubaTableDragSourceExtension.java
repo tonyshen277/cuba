@@ -23,6 +23,16 @@ import com.vaadin.v7.ui.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Drag source extension for {@link com.vaadin.v7.ui.Table}.
+ * <br>
+ * You can drag rows from table and drop them to another components if they use special extension to handle drop event.
+ * <br>
+ * To get dragged item ids in the drop event you get this extension and use {@link #getLastDraggedItemIds()} or
+ * {@link #getLastSingleDraggedItemId()}.
+ *
+ * @param <T> component that extends {@link com.vaadin.v7.ui.Table}
+ */
 public class CubaTableDragSourceExtension<T extends Table> extends DragSourceExtension<T> {
 
     protected List<Object> transferredItems = new ArrayList<>();
@@ -41,18 +51,24 @@ public class CubaTableDragSourceExtension<T extends Table> extends DragSourceExt
 
             if (enhancedTable != null) {
                 for (String key : rowKeys)
-                   transferredItems.add(enhancedTable.getItemByRowKey(key));
+                    transferredItems.add(enhancedTable.getItemByRowKey(key));
             }
         };
 
         registerRpc(serverRpc);
     }
 
-    public List<Object> getLastTransferredItems() {
+    /**
+     * @return list of last dragged item ids
+     */
+    public List<Object> getLastDraggedItemIds() {
         return transferredItems;
     }
 
-    public Object getLastSingleTransferedItem() {
+    /**
+     * @return id of dragged item. If were dragged more than one it returns first item id in the collection.
+     */
+    public Object getLastSingleDraggedItemId() {
         return transferredItems.isEmpty() ? null : transferredItems.iterator().next();
     }
 }
