@@ -23,10 +23,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.BeanValidation;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -57,6 +54,8 @@ public class ValueBinder {
     protected BeanValidation beanValidation;
     @Inject
     protected BeanLocator beanLocator;
+    @Inject
+    protected Security security;
 
     public <V> ValueBinding<V> bind(HasValue<V> component, ValueSource<V> valueSource) {
         if (valueSource instanceof BeanLocatorAware) {
@@ -69,20 +68,36 @@ public class ValueBinder {
             ((Component.Editable) component).setEditable(!valueSource.isReadOnly());
         }
 
-        if (valueSource instanceof EntityValueSource
-                && component instanceof Field) {
-            initRequired((Field) component, ((EntityValueSource) valueSource).getMetaPropertyPath());
+        if (valueSource instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-            // todo reset required if the attribute is not available due to security rules
-            // todo on item change - reset required if needed
+            MetaClass entityMetaClass = entityValueSource.getEntityMetaClass();
+            MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
+
+            if (component instanceof Field) {
+                initRequired((Field) component, metaPropertyPath);
+
+                // vaadin8 security listener
+                // todo reset required if the attribute is not available due to security rules
+                // todo on item change - reset required if needed
+
+                initBeanValidator((Field<?>) component, metaPropertyPath);
+            }
+
+            if (entityValueSource.isDataModelSecurityEnabled()) {
+                if (component instanceof Component.Editable) {
+                    if (!security.isEntityAttrUpdatePermitted(entityMetaClass, metaPropertyPath.toPathString())) {
+                        ((Component.Editable) component).setEditable(false);
+                    }
+                }
+
+                if (!security.isEntityAttrReadPermitted(entityMetaClass, metaPropertyPath.toPathString())) {
+                    component.setVisible(false);
+                }
+            }
         }
 
         binding.bind();
-
-        if (valueSource instanceof EntityValueSource
-                && component instanceof Field) {
-            initBeanValidator((Field<?>) component, ((EntityValueSource) valueSource).getMetaPropertyPath());
-        }
 
         return binding;
     }
@@ -126,7 +141,7 @@ public class ValueBinder {
         protected Subscription componentValueChangeSubscription;
 
         protected Subscription sourceValueChangeSubscription;
-        protected Subscription sourceStateChangeSupscription;
+        protected Subscription sourceStateChangeSubscription;
         protected Subscription sourceInstanceChangeSubscription;
 
         protected boolean buffered = false;
@@ -156,9 +171,9 @@ public class ValueBinder {
                 this.sourceValueChangeSubscription.remove();
                 this.sourceValueChangeSubscription = null;
             }
-            if (this.sourceStateChangeSupscription != null) {
-                this.sourceStateChangeSupscription.remove();
-                this.sourceStateChangeSupscription = null;
+            if (this.sourceStateChangeSubscription != null) {
+                this.sourceStateChangeSubscription.remove();
+                this.sourceStateChangeSubscription = null;
             }
             if (this.sourceInstanceChangeSubscription != null) {
                 this.sourceInstanceChangeSubscription.remove();
@@ -192,7 +207,7 @@ public class ValueBinder {
             this.componentValueChangeSubscription = component.addValueChangeListener(this::componentValueChanged);
 
             this.sourceValueChangeSubscription = source.addValueChangeListener(this::sourceValueChanged);
-            this.sourceStateChangeSupscription = source.addStateChangeListener(this::valueSourceStateChanged);
+            this.sourceStateChangeSubscription = source.addStateChangeListener(this::valueSourceStateChanged);
             if (source instanceof EntityValueSource) {
                 this.sourceInstanceChangeSubscription = ((EntityValueSource<Entity, V>) source).addInstanceChangeListener(this::sourceInstanceChanged);
             }
