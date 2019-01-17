@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data.value;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -71,7 +72,6 @@ public class ValueBinder {
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
 
-            MetaClass entityMetaClass = entityValueSource.getEntityMetaClass();
             MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
 
             if (component instanceof Field) {
@@ -86,12 +86,12 @@ public class ValueBinder {
 
             if (entityValueSource.isDataModelSecurityEnabled()) {
                 if (component instanceof Component.Editable) {
-                    if (!security.isEntityAttrUpdatePermitted(entityMetaClass, metaPropertyPath.toPathString())) {
+                    if (!security.isEntityAttrUpdatePermitted(metaPropertyPath)) {
                         ((Component.Editable) component).setEditable(false);
                     }
                 }
 
-                if (!security.isEntityAttrReadPermitted(entityMetaClass, metaPropertyPath.toPathString())) {
+                if (!security.isEntityAttrReadPermitted(metaPropertyPath)) {
                     component.setVisible(false);
                 }
             }
@@ -111,10 +111,16 @@ public class ValueBinder {
         if (Boolean.TRUE.equals(notNullUiComponent)) {
             newRequired = true;
         }
-        component.setRequired(newRequired);
-        component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
-                metaPropertyPath.getMetaClass(), metaPropertyPath.toPathString())
-        );
+
+        if (newRequired) {
+            component.setRequired(true);
+
+            if (Strings.isNullOrEmpty(component.getRequiredMessage())) {
+                component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
+                        metaPropertyPath.getMetaClass(), metaPropertyPath.toPathString())
+                );
+            }
+        }
     }
 
     protected void initBeanValidator(Field<?> component, MetaPropertyPath metaPropertyPath) {
