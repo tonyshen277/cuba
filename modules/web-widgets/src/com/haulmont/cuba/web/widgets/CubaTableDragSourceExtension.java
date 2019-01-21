@@ -25,34 +25,26 @@ import java.util.List;
 
 /**
  * Drag source extension for {@link com.vaadin.v7.ui.Table}.
- * <br>
+ * <p>
  * You can drag rows from table and drop them to another components if they use special extension to handle drop event.
- * <br>
+ * <p>
  * To get dragged item ids in the drop event you get this extension and use {@link #getLastDraggedItemIds()} or
  * {@link #getLastSingleDraggedItemId()}.
  *
  * @param <T> component that extends {@link com.vaadin.v7.ui.Table}
  */
-public class CubaTableDragSourceExtension<T extends Table> extends DragSourceExtension<T> {
+public class CubaTableDragSourceExtension<T extends Table & CubaEnhancedTable> extends DragSourceExtension<T> {
 
     protected List<Object> transferredItems = new ArrayList<>();
-
-    protected CubaEnhancedTable enhancedTable;
 
     public CubaTableDragSourceExtension(T target) {
         super(target);
 
-        if (target instanceof CubaEnhancedTable) {
-            enhancedTable = (CubaEnhancedTable) target;
-        }
-
         CubaTableDragSourceExtensionServerRpc serverRpc = (CubaTableDragSourceExtensionServerRpc) rowKeys -> {
             transferredItems.clear();
 
-            if (enhancedTable != null) {
-                for (String key : rowKeys)
-                    transferredItems.add(enhancedTable.getItemByRowKey(key));
-            }
+            for (String key : rowKeys)
+                transferredItems.add(target.getItemByRowKey(key));
         };
 
         registerRpc(serverRpc);

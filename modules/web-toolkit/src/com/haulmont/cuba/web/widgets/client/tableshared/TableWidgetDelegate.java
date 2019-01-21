@@ -364,6 +364,10 @@ public class TableWidgetDelegate {
         }
 
         afterBodyUpdateListeners.remove(listener);
+
+        if (afterBodyUpdateListeners.isEmpty()) {
+            afterBodyUpdateListeners = null;
+        }
     }
 
     public void handleUpdateBody() {
