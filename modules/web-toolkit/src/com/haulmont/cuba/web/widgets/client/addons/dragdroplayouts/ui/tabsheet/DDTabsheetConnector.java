@@ -73,22 +73,28 @@ public class DDTabsheetConnector extends TabsheetConnector
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         VDragDropUtil.updateDropHandlerFromUIDL(uidl, this, new VDDTabsheetDropHandler(this));
-        if (html5Support != null) {
-            html5Support.disable();
-            html5Support = null;
-        }
+        enableDDHtml5();
+    }
+
+    protected void enableDDHtml5() {
+        disableHtml5();
+
         VDDTabsheetDropHandler dropHandler = getWidget().getDropHandler();
         if (dropHandler != null) {
             html5Support = HTML5Support.enable(this, dropHandler);
         }
     }
 
-    @Override
-    public void onUnregister() {
+    protected void disableHtml5() {
         if (html5Support != null) {
             html5Support.disable();
             html5Support = null;
         }
+    }
+
+    @Override
+    public void onUnregister() {
+        disableHtml5();
         super.onUnregister();
     }
 

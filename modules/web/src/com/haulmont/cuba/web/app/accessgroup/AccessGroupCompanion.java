@@ -86,6 +86,10 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                 // if we reorder groups inside tree
             } else {
                 String draggedItemId = event.getDataTransferData().get(TRANSFER_DATA_TYPE);
+                if (draggedItemId == null) {
+                    return;
+                }
+
                 Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(draggedItemId));
 
                 if (event.getDropTargetRow().isPresent()) {
