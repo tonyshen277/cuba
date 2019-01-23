@@ -6,15 +6,15 @@
 package com.haulmont.chile.core.datatypes;
 
 /**
- * Exception that can be thrown during value conversion in {@link Datatype}
+ * Exception that can be thrown during value conversion in {@link Datatype}.
  */
-public class DatatypeConversionException extends RuntimeException {
+public class ValueConversionException extends RuntimeException {
 
-    public DatatypeConversionException(String message) {
+    public ValueConversionException(String message) {
         super(message);
     }
 
-    public DatatypeConversionException(String message, Throwable cause) {
+    public ValueConversionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

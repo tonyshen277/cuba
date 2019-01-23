@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
@@ -99,6 +100,8 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
                 return datatype.parse(value, locale);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             }
         }
 
@@ -110,6 +113,8 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
                 return propertyDataType.parse(componentRawValue, locale);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             }
         }
 

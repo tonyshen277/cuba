@@ -45,7 +45,7 @@ public interface Datatype<T> {
 
     /**
      * Parses value from String taking into account local formats. During the parsing process, you can throw
-     * {@link DatatypeConversionException} instead of {@link ParseException}.
+     * {@link ValueConversionException} instead of {@link ParseException}.
      *
      * @param locale locale
      * @param value  value to parse
