@@ -26,6 +26,7 @@ public class CubaMainTabSheetState extends DDTabSheetState {
 
     @NoLayout
     public boolean hasActionsHandlers = false;
+
     /**
      * Important! If Tab in TabSheet contains components that provide drag and drop features, users may face with
      * freeze UI in case of dragging elements to TabSheet or Tab layout.

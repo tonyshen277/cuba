@@ -116,7 +116,7 @@ public class CubaMainTabSheetConnector extends DDTabsheetConnector {
             if (getState().ddHtmlEnable) {
                 enableDDHtml5();
             } else {
-                disableHtml5();
+                disableDDHtml5();
             }
         }
     }

@@ -77,7 +77,7 @@ public class DDTabsheetConnector extends TabsheetConnector
     }
 
     protected void enableDDHtml5() {
-        disableHtml5();
+        disableDDHtml5();
 
         VDDTabsheetDropHandler dropHandler = getWidget().getDropHandler();
         if (dropHandler != null) {
@@ -85,7 +85,7 @@ public class DDTabsheetConnector extends TabsheetConnector
         }
     }
 
-    protected void disableHtml5() {
+    protected void disableDDHtml5() {
         if (html5Support != null) {
             html5Support.disable();
             html5Support = null;
@@ -94,7 +94,7 @@ public class DDTabsheetConnector extends TabsheetConnector
 
     @Override
     public void onUnregister() {
-        disableHtml5();
+        disableDDHtml5();
         super.onUnregister();
     }
 
