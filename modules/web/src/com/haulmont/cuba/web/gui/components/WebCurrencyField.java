@@ -98,10 +98,10 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -111,10 +111,10 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
                 return propertyDataType.parse(componentRawValue, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 

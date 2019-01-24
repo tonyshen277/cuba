@@ -166,10 +166,10 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -179,10 +179,10 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
                 return propertyDataType.parse(value, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 

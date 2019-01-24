@@ -152,10 +152,10 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -165,10 +165,10 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
                 return propertyDataType.parse(value, locale);
-            } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
+            } catch (ParseException e) {
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 

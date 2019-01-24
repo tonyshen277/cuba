@@ -5,16 +5,14 @@
 
 package com.haulmont.chile.core.datatypes;
 
+import java.text.ParseException;
+
 /**
  * Exception that can be thrown during value conversion in {@link Datatype}.
  */
-public class ValueConversionException extends RuntimeException {
+public class ValueConversionException extends ParseException {
 
     public ValueConversionException(String message) {
-        super(message);
-    }
-
-    public ValueConversionException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, 0);
     }
 }

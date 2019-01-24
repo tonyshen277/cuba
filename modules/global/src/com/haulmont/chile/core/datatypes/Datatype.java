@@ -39,7 +39,12 @@ public interface Datatype<T> {
     /** Converts value to String taking into account local formats. Returns an empty string for null value. */
     String format(@Nullable Object value, Locale locale);
 
-    /** Parses value from String */
+    /**
+     * Parses value from String. During the parsing process, you can throw {@link ValueConversionException}
+     * instead of {@link ParseException}.
+     *
+     * @param value value to parse
+     */
     @Nullable
     T parse(@Nullable String value) throws ParseException;
 
