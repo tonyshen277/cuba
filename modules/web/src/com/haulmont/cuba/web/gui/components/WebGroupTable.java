@@ -611,6 +611,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         component.setAggregationDistributionProvider(this::distributeGroupAggregation);
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean distributeGroupAggregation(AggregationInputValueChangeContext context) {
         if (distributionProvider != null) {
             String value = context.getValue();
@@ -621,18 +622,19 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 Collection<E> scope = Collections.emptyList();
 
                 if (context.isTotalAggregation()) {
-                    //noinspection unchecked
-                    scope = getDatasource().getItems();
+                    scope = getAllItems();
                 } else if (context instanceof GroupAggregationInputValueChangeContext) {
                     Object groupId = ((GroupAggregationInputValueChangeContext) context).getGroupInfo();
                     if (groupId instanceof GroupInfo) {
                         groupInfo = (GroupInfo) groupId;
-                        //noinspection unchecked
-                        scope = getDatasource().getChildItems(groupInfo);
+                        if (getDatasource() != null) {
+                            scope = getDatasource().getChildItems(groupInfo);
+                        } else {
+                            scope = ((GroupTableItems) getItems()).getChildItems(groupInfo);
+                        }
                     }
                 }
 
-                //noinspection unchecked
                 GroupAggregationDistributionContext<E> aggregationDistribution =
                         new GroupAggregationDistributionContext(getColumnNN(columnId.toString()),
                                 parsedValue, scope, groupInfo, context.isTotalAggregation());

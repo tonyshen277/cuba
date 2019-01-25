@@ -2982,10 +2982,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             Object columnId = context.getColumnId();
             try {
                 Object parsedValue = getParsedAggregationValue(value, columnId);
-                //noinspection unchecked
+                Collection<E> items = getAllItems();
+
                 AggregationDistributionContext<E> distributionContext =
-                        new AggregationDistributionContext<E>(getColumn(columnId.toString()),
-                                parsedValue, getDatasource().getItems(), context.isTotalAggregation());
+                        new AggregationDistributionContext<>(getColumn(columnId.toString()),
+                                parsedValue, items, context.isTotalAggregation());
+                //noinspection unchecked
                 distributionProvider.onDistribution(distributionContext);
             } catch (ValueConversionException e) {
                 showParseErrorNotification(e.getLocalizedMessage());
@@ -2996,6 +2998,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Collection<E> getAllItems() {
+        if (getDatasource() != null) {
+            return getDatasource().getItems();
+        }
+
+        TableItems<E> tableItems = getItems();
+        return ((ContainerDataUnit) tableItems).getContainer().getMutableItems();
     }
 
     @Override
