@@ -18,7 +18,10 @@ package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.EntityAccessException;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Button;
@@ -54,6 +57,12 @@ public class FileBrowser extends AbstractLookup {
     @Inject
     protected Security security;
 
+    @Inject
+    protected DataManager dataManager;
+
+    @Inject
+    protected Notifications notifications;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -63,6 +72,16 @@ public class FileBrowser extends AbstractLookup {
                 .withHandler(event -> {
                     FileDescriptor fileDescriptor = filesTable.getSingleSelected();
                     if (fileDescriptor != null) {
+                        try{
+                            dataManager.reload(fileDescriptor, filesDs.getView());
+                        } catch (EntityAccessException e) {
+                            String message = messages.getMainMessage("fileNotFound.message");
+                            notifications.create(Notifications.NotificationType.ERROR)
+                                    .withCaption(String.format(message, fileDescriptor.getName()))
+                                    .show();
+                            return;
+                        }
+
                         exportDisplay.show(fileDescriptor, null);
                     }
                 }));
