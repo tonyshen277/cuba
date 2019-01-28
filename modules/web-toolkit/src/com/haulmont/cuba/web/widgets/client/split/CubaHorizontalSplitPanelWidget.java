@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.widgets.client.split;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.client.placeholder.CubaPlaceHolderWidget;
 import com.vaadin.client.ui.VOverlay;
@@ -39,7 +38,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected static final String SP_DOCKABLE_LEFT = "c-splitpanel-dockable-left";
     protected static final String SP_DOCKABLE_RIGHT = "c-splitpanel-dockable-right";
 
-    protected static final int BUTTON_WIDTH_SPACE = 20;
+    protected static final int BUTTON_WIDTH_SPACE = 10;
     protected boolean reversed;
 
     protected int splitHeight;
@@ -147,8 +146,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
             if (dockMode == SplitPanelDockMode.LEFT) {
                 int left = splitter.getAbsoluteLeft();
-
-                if (left > BUTTON_WIDTH_SPACE) {
+                if (left > getAbsoluteLeft() + BUTTON_WIDTH_SPACE) {
                     dockButtonContainer.setPopupPosition(
                             left - (dockButton.getOffsetWidth() - getSplitterSize()),
                             getDockBtnContainerVerticalPosition());
