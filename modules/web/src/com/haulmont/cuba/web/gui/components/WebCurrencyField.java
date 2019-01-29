@@ -25,8 +25,10 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.StringUtils;
@@ -187,6 +189,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     @Override
     public void setDatatype(Datatype<V> datatype) {
         Preconditions.checkNotNullArgument(datatype);
+        checkValueSourceDatatypeMismatch(datatype);
 
         this.datatype = datatype;
     }
@@ -234,5 +237,16 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
 
     protected CurrencyLabelPosition fromWidgetLabelPosition(com.haulmont.cuba.web.widgets.CurrencyLabelPosition wLabelPosition) {
         return CurrencyLabelPosition.valueOf(wLabelPosition.name());
+    }
+
+    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
+        ValueSource valueSource = getValueSource();
+        if (valueSource != null && datatype != null) {
+            if (!valueSource.getType().equals(datatype.getJavaClass())) {
+                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
+                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
+                        getFrame() == null ? "" : getFrame().getId());
+            }
+        }
     }
 }

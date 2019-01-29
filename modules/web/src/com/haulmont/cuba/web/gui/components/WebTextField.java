@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
@@ -204,6 +205,8 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        checkValueSourceDatatypeMismatch(datatype);
+
         this.datatype = datatype;
     }
 
@@ -391,5 +394,16 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     @Override
     public String getHtmlName() {
         return component.getHtmlName();
+    }
+
+    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
+        ValueSource valueSource = getValueSource();
+        if (valueSource != null && datatype != null) {
+            if (!valueSource.getType().equals(datatype.getJavaClass())) {
+                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
+                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
+                        getFrame() == null ? "" : getFrame().getId());
+            }
+        }
     }
 }
