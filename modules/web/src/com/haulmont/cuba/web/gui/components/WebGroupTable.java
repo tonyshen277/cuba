@@ -28,7 +28,9 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceGroupTableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -622,16 +624,17 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 Collection<E> scope = Collections.emptyList();
 
                 if (context.isTotalAggregation()) {
-                    scope = getAllItems();
+                    TableItems<E> tableItems = getItems();
+                    if (tableItems instanceof ContainerTableItems) {
+                        scope = ((ContainerTableItems) tableItems).getContainer().getItems();
+                    } else {
+                        scope = ((DatasourceTableItems) tableItems).getDatasource().getItems();
+                    }
                 } else if (context instanceof GroupAggregationInputValueChangeContext) {
                     Object groupId = ((GroupAggregationInputValueChangeContext) context).getGroupInfo();
                     if (groupId instanceof GroupInfo) {
                         groupInfo = (GroupInfo) groupId;
-                        if (getDatasource() != null) {
-                            scope = getDatasource().getChildItems(groupInfo);
-                        } else {
-                            scope = ((GroupTableItems) getItems()).getChildItems(groupInfo);
-                        }
+                        scope = ((GroupTableItems) getItems()).getChildItems(groupInfo);
                     }
                 }
 
