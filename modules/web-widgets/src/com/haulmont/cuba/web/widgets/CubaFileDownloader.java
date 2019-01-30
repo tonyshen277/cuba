@@ -21,10 +21,7 @@ import com.vaadin.server.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
-
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 public class CubaFileDownloader extends AbstractExtension {
 
@@ -32,6 +29,12 @@ public class CubaFileDownloader extends AbstractExtension {
     public static final String VIEW_RESOURCE_PREFIX = "view-";
 
     protected boolean overrideContentType = true;
+
+    protected FileNotFoundExceptionListener fileNotFoundExceptionListener;
+
+    public interface FileNotFoundExceptionListener {
+        boolean onHandle(Exception e, VaadinResponse response);
+    }
 
     public void downloadFile(Resource resource) {
         String resourceId = DOWNLOAD_RESOURCE_PREFIX + UUID.randomUUID().toString();
@@ -111,8 +114,14 @@ public class CubaFileDownloader extends AbstractExtension {
             try {
                 stream = ((ConnectorResource) resource).getStream();
             } catch (RuntimeException e) {
-                writeErrorBody(response, e.getMessage());
-                throw new IOException(e.getCause());
+                if (fileNotFoundExceptionListener == null
+                        || !fileNotFoundExceptionListener.onHandle(e, response)) {
+                    // send exception further
+                    throw new IOException(e.getCause());
+                } else {
+                    // exception is handled in listener
+                    return true;
+                }
             }
 
             String contentDisposition = stream.getParameter(DownloadStream.CONTENT_DISPOSITION);
@@ -142,19 +151,16 @@ public class CubaFileDownloader extends AbstractExtension {
         return true;
     }
 
-    protected void writeErrorBody(VaadinResponse response, String message) throws IOException {
-        response.setStatus(SC_NOT_FOUND);
-        response.setHeader("Content-Type", "text/html; charset=utf-8");
-
-        String[] parts = message.split(":", 2);
-
-        PrintWriter writer = response.getWriter();
-        writer.write("<p style=\"font-size: 25px\">" + parts[1] + "</p>");
-        writer.flush();
-    }
-
     protected boolean isSafariOrIOS() {
         return Page.getCurrent().getWebBrowser().isSafari()
                 || Page.getCurrent().getWebBrowser().isIOS();
+    }
+
+    public FileNotFoundExceptionListener getFileNotFoundExceptionListener() {
+        return fileNotFoundExceptionListener;
+    }
+
+    public void setFileNotFoundExceptionListener(FileNotFoundExceptionListener notFoundExceptionListener) {
+        this.fileNotFoundExceptionListener = notFoundExceptionListener;
     }
 }

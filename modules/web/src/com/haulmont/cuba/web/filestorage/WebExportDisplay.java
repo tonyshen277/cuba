@@ -17,8 +17,7 @@
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.FileTypesHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.*;
@@ -27,12 +26,17 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.widgets.CubaFileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 /**
  * Allows to show exported data in web browser or download it.
@@ -46,6 +50,8 @@ public class WebExportDisplay implements ExportDisplay {
     @Inject
     protected Configuration configuration;
 
+    protected Messages messages;
+
     protected boolean newWindow;
 
     // Use flags from app.properties for show/download files
@@ -57,6 +63,11 @@ public class WebExportDisplay implements ExportDisplay {
     public WebExportDisplay() {
         this(false);
         useViewList = true;
+    }
+
+    @Inject
+    public void setMessages(Messages messages) {
+        this.messages = messages;
     }
 
     /**
@@ -102,6 +113,24 @@ public class WebExportDisplay implements ExportDisplay {
         }
 
         CubaFileDownloader fileDownloader = AppUI.getCurrent().getFileDownloader();
+        fileDownloader.setFileNotFoundExceptionListener((exception, response) -> {
+            if (!(exception instanceof RuntimeFileStorageException)) {
+                return false;
+            }
+
+            FileStorageException storageException = ((RuntimeFileStorageException) exception).getCause();
+            if (storageException.getType() == FileStorageException.Type.FILE_NOT_FOUND) {
+                try {
+                    writeFileNotFoundException(response, messages.formatMessage(
+                            getClass(), "fileNotFound.message", storageException.getFileName()));
+                    return true;
+                } catch (IOException e) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        });
 
         StreamResource resource = new StreamResource(dataProvider::provide, resourceName);
 
@@ -187,5 +216,14 @@ public class WebExportDisplay implements ExportDisplay {
 
     protected boolean isIOS() {
         return Page.getCurrent().getWebBrowser().isIOS();
+    }
+
+    protected void writeFileNotFoundException(VaadinResponse response, String message) throws IOException {
+        response.setStatus(SC_NOT_FOUND);
+        response.setHeader("Content-Type", "text/html; charset=utf-8");
+
+        PrintWriter writer = response.getWriter();
+        writer.write("<h1 style=\"font-size:40px;\">404</h1><p style=\"font-size: 25px\">" + message + "</p>");
+        writer.flush();
     }
 }
