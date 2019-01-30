@@ -29,6 +29,8 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,9 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 @Component(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
+
+    private static final Logger log = LoggerFactory.getLogger(WebExportDisplay.class);
+
     @Inject
     protected BackgroundWorker backgroundWorker;
 
@@ -113,24 +118,7 @@ public class WebExportDisplay implements ExportDisplay {
         }
 
         CubaFileDownloader fileDownloader = AppUI.getCurrent().getFileDownloader();
-        fileDownloader.setFileNotFoundExceptionListener((exception, response) -> {
-            if (!(exception instanceof RuntimeFileStorageException)) {
-                return false;
-            }
-
-            FileStorageException storageException = ((RuntimeFileStorageException) exception).getCause();
-            if (storageException.getType() == FileStorageException.Type.FILE_NOT_FOUND) {
-                try {
-                    writeFileNotFoundException(response, messages.formatMessage(
-                            getClass(), "fileNotFound.message", storageException.getFileName()));
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        });
+        fileDownloader.setFileNotFoundExceptionListener(this::handleFileNotFoundException);
 
         StreamResource resource = new StreamResource(dataProvider::provide, resourceName);
 
@@ -216,6 +204,26 @@ public class WebExportDisplay implements ExportDisplay {
 
     protected boolean isIOS() {
         return Page.getCurrent().getWebBrowser().isIOS();
+    }
+
+    protected boolean handleFileNotFoundException(Exception exception, VaadinResponse response) {
+        if (!(exception instanceof RuntimeFileStorageException)) {
+            return false;
+        }
+
+        FileStorageException storageException = ((RuntimeFileStorageException) exception).getCause();
+        if (storageException.getType() == FileStorageException.Type.FILE_NOT_FOUND) {
+            try {
+                writeFileNotFoundException(response, messages.formatMessage(
+                        getClass(), "fileNotFound.message", storageException.getFileName()));
+                return true;
+            } catch (IOException e) {
+                log.debug("Can't write file not found exception to the response body for: " + storageException.getFileName());
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     protected void writeFileNotFoundException(VaadinResponse response, String message) throws IOException {

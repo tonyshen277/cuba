@@ -117,7 +117,7 @@ public class CubaFileDownloader extends AbstractExtension {
                 if (fileNotFoundExceptionListener == null
                         || !fileNotFoundExceptionListener.onHandle(e, response)) {
                     // send exception further
-                    throw new IOException(e.getCause());
+                    throw e;
                 } else {
                     // exception is handled in listener
                     return true;
