@@ -179,9 +179,7 @@ public class DataAwareComponentsTools {
         if (metaProperty.getRange().isEnum()) {
             //noinspection unchecked
             optionsField.setOptions(new EnumOptions(metaProperty.getJavaType()));
-        }
-
-        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+        } else if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
 
             if (categoryAttribute != null
