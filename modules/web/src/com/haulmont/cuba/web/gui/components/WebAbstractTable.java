@@ -176,7 +176,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected com.vaadin.v7.ui.Table.ColumnCollapseListener columnCollapseListener;
 
-    protected AggregationDistributionProvider distributionProvider;
+    protected AggregationDistributionProvider<E> distributionProvider;
 
     // Map column id to Printable representation
     // todo this functionality should be moved to Excel action
@@ -2971,7 +2971,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public void setAggregationDistributionProvider(AggregationDistributionProvider distributionProvider) {
+    public void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider) {
         this.distributionProvider = distributionProvider;
 
         component.setAggregationDistributionProvider(this::distributeAggregation);
@@ -2985,18 +2985,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             try {
                 Object parsedValue = getParsedAggregationValue(value, columnId);
                 TableItems<E> tableItems = getItems();
-
-                Collection<E> items;
-                if (tableItems instanceof ContainerTableItems) {
-                    items = ((ContainerTableItems) tableItems).getContainer().getItems();
-                } else {
-                    items = ((DatasourceTableItems) tableItems).getDatasource().getItems();
-                }
+                Collection<E> items = tableItems == null ?
+                        Collections.emptyList() : tableItems.getItems();
 
                 AggregationDistributionContext<E> distributionContext =
                         new AggregationDistributionContext<>(getColumn(columnId.toString()),
                                 parsedValue, items, context.isTotalAggregation());
-                //noinspection unchecked
+
                 distributionProvider.onDistribution(distributionContext);
             } catch (ValueConversionException e) {
                 showParseErrorNotification(e.getLocalizedMessage());
@@ -3010,7 +3005,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public AggregationDistributionProvider getAggregationDistributionProvider() {
+    public AggregationDistributionProvider<E> getAggregationDistributionProvider() {
         return distributionProvider;
     }
 

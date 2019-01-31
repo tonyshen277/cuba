@@ -607,7 +607,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     @Override
-    public void setAggregationDistributionProvider(AggregationDistributionProvider distributionProvider) {
+    public void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider) {
         this.distributionProvider = distributionProvider;
 
         component.setAggregationDistributionProvider(this::distributeGroupAggregation);
