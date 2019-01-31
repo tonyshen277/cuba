@@ -218,7 +218,8 @@ public class WebExportDisplay implements ExportDisplay {
                         getClass(), "fileNotFound.message", storageException.getFileName()));
                 return true;
             } catch (IOException e) {
-                log.debug("Can't write file not found exception to the response body for: " + storageException.getFileName());
+                log.debug("Can't write file not found exception to the response body for: {}",
+                        storageException.getFileName(), e);
                 return false;
             }
         } else {
