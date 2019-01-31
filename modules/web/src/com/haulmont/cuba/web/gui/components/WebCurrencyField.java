@@ -58,6 +58,11 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     }
 
     @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
+    }
+
+    @Inject
     public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
         //noinspection unchecked
         this.defaultDatatype = (Datatype<V>) datatypeRegistry.get(BigDecimal.class);
