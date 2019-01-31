@@ -625,11 +625,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
                 if (context.isTotalAggregation()) {
                     TableItems<E> tableItems = getItems();
-                    if (tableItems instanceof ContainerTableItems) {
-                        scope = ((ContainerTableItems) tableItems).getContainer().getItems();
-                    } else {
-                        scope = ((DatasourceTableItems) tableItems).getDatasource().getItems();
-                    }
+                    scope = tableItems == null ? Collections.emptyList() : tableItems.getItems();
                 } else if (context instanceof GroupAggregationInputValueChangeContext) {
                     Object groupId = ((GroupAggregationInputValueChangeContext) context).getGroupInfo();
                     if (groupId instanceof GroupInfo) {
