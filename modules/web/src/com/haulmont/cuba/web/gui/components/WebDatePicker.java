@@ -21,7 +21,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DatePicker;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
@@ -44,10 +43,17 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     protected V rangeStart;
     protected V rangeEnd;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebDatePicker() {
         this.component = new CubaDatePicker();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -166,7 +172,7 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
-        checkValueSourceDatatypeMismatch(datatype);
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
 
         this.datatype = datatype;
     }
@@ -194,16 +200,5 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     @Override
     public boolean isModified() {
         return super.isModified();
-    }
-
-    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
-        ValueSource valueSource = getValueSource();
-        if (valueSource != null && datatype != null) {
-            if (!valueSource.getType().equals(datatype.getJavaClass())) {
-                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
-                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
-                        getFrame() == null ? "" : getFrame().getId());
-            }
-        }
     }
 }

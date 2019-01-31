@@ -19,12 +19,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
@@ -49,6 +47,13 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     protected boolean trimming = true;
 
     protected int columns;
+
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
+    }
 
     @Override
     public void focus() {
@@ -199,8 +204,7 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
-        Preconditions.checkNotNullArgument(datatype);
-        checkValueSourceDatatypeMismatch(datatype);
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
 
         this.datatype = datatype;
     }
@@ -310,17 +314,6 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
             dataAwareComponentsTools.setupCaseConversion(this, entityValueSource);
             dataAwareComponentsTools.setupMaxLength(this, entityValueSource);
-        }
-    }
-
-    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
-        ValueSource valueSource = getValueSource();
-        if (valueSource != null && datatype != null) {
-            if (!valueSource.getType().equals(datatype.getJavaClass())) {
-                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
-                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
-                        getFrame() == null ? "" : getFrame().getId());
-            }
         }
     }
 }

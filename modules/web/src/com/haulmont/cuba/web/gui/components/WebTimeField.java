@@ -21,9 +21,9 @@ import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.widgets.CubaTimeField;
@@ -45,10 +45,17 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
     protected Resolution resolution = Resolution.MIN;
     protected Datatype<V> datatype;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebTimeField() {
         component = new CubaTimeField();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Override
@@ -116,7 +123,7 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
-        checkValueSourceDatatypeMismatch(datatype);
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
 
         this.datatype = datatype;
     }
@@ -169,16 +176,5 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
     @Override
     public boolean isModified() {
         return super.isModified();
-    }
-
-    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
-        ValueSource valueSource = getValueSource();
-        if (valueSource != null && datatype != null) {
-            if (!valueSource.getType().equals(datatype.getJavaClass())) {
-                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
-                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
-                        getFrame() == null ? "" : getFrame().getId());
-            }
-        }
     }
 }

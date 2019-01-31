@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -82,6 +81,8 @@ public class WebDateField<V extends Comparable<V>>
 
     protected Subscription parentEditableChangeSubscription;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebDateField() {
         component = createComponent();
         component.setPrimaryStyleName("c-datefield-layout");
@@ -119,6 +120,11 @@ public class WebDateField<V extends Comparable<V>>
 
     protected void initTimeField(CubaTimeField timeField) {
         timeField.setCaptionManagedByLayout(false);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -220,7 +226,7 @@ public class WebDateField<V extends Comparable<V>>
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
-        checkValueSourceDatatypeMismatch(datatype);
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
 
         this.datatype = datatype;
     }
@@ -687,17 +693,6 @@ public class WebDateField<V extends Comparable<V>>
             UserError userError = new UserError(errorMessage);
             dateField.setComponentError(userError);
             timeField.setComponentError(userError);
-        }
-    }
-
-    protected void checkValueSourceDatatypeMismatch(Datatype<V> datatype) {
-        ValueSource valueSource = getValueSource();
-        if (valueSource != null && datatype != null) {
-            if (!valueSource.getType().equals(datatype.getJavaClass())) {
-                throw new GuiDevelopmentException("ValueSource and Datatype have different types. ValueSource:"
-                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass(),
-                        getFrame() == null ? "" : getFrame().getId());
-            }
         }
     }
 }
