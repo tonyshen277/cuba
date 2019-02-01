@@ -116,6 +116,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             } else if (beforeDockPosition != null) {
                 // apply last saved position if defaultPosition is null
                 newPosition = beforeDockPosition;
+            } else if (isSplitterInRightChangeArea()) {
+                // splitter is placed in the absolute LEFT position and if we click on the dock button
+                // it won't be replaced, because of defaultPosition and beforeDockPosition are null.
+                // So we replace it to the absolute RIGHT position.
+                defaultPosition = position;
+                newPosition = reversed ? "0px" : getAbsoluteRight() + "px";
             }
         } else if (dockMode == SplitPanelDockMode.RIGHT) {
             if (dockButtonState == DockButtonState.RIGHT) {
@@ -126,6 +132,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             } else if (beforeDockPosition != null) {
                 // apply last saved position if defaultPosition is null
                 newPosition = beforeDockPosition;
+            } else if (isSplitterInLeftChangeArea()) {
+                // splitter is placed in the absolute RIGHT position and if we click on the dock button
+                // it won't be replaced, because of defaultPosition and beforeDockPosition are null.
+                // So we replace it to the absolute LEFT position.
+                defaultPosition = position;
+                newPosition = "0px";
             }
         }
 
@@ -171,8 +183,9 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 }
             } else if (dockMode == SplitPanelDockMode.RIGHT) {
                 int right = splitter.getAbsoluteRight();
+                int splitRightPosition = getAbsoluteLeft() + getAbsoluteRight();
 
-                if (right < getAbsoluteRight() - BUTTON_WIDTH_SPACE) {
+                if (right < splitRightPosition - BUTTON_WIDTH_SPACE) {
                     dockButtonContainer.setPopupPosition(
                             right - getSplitterSize(),
                             getDockBtnContainerVerticalPosition());
@@ -197,6 +210,17 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 }
             }
         }
+    }
+
+    protected boolean isSplitterInRightChangeArea() {
+        int left = splitter.getAbsoluteLeft();
+        return left < getAbsoluteLeft() + BUTTON_WIDTH_SPACE;
+    }
+
+    protected boolean isSplitterInLeftChangeArea() {
+        int right = splitter.getAbsoluteRight();
+        int splitRightPosition = getAbsoluteLeft() + getAbsoluteRight();
+        return right > splitRightPosition - BUTTON_WIDTH_SPACE;
     }
 
     private void updateDockButtonStyle(String newStyle, String oldStyle) {
