@@ -24,6 +24,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.columnmanager.ColumnManager;
+import com.haulmont.cuba.gui.components.columnmanager.GroupColumnManager;
 import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrapper;
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableItems;
@@ -53,7 +55,8 @@ public interface Table<E extends Entity>
             ListComponent<E>, Component.Editable, HasSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
-            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription {
+            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription,
+            ColumnManager {
 
     enum ColumnAlignment {
         LEFT,
@@ -113,8 +116,20 @@ public interface Table<E extends Entity>
 
     /**
      * Assign caption for column in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCaption(String)} instead.
      */
+    @Deprecated
     void setColumnCaption(String columnId, String caption);
+
+    /**
+     * Assign caption for column in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCaption(String)} instead.
+     */
+    @Deprecated
     void setColumnCaption(Table.Column column, String caption);
 
     /**
@@ -129,26 +144,84 @@ public interface Table<E extends Entity>
 
     /**
      * Assign description for column in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setDescription(String)} instead.
      */
+    @Deprecated
     void setColumnDescription(String columnId, String description);
+
+    /**
+     * Assign description for column in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setDescription(String)} instead.
+     */
+    @Deprecated
     void setColumnDescription(Table.Column column, String description);
 
     /**
      * Show/hide column in runtime. Hidden column will be available in column control.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCollapsed(boolean)} instead.
      */
+    @Deprecated
     void setColumnCollapsed(String columnId, boolean collapsed);
+
+    /**
+     * Show/hide column in runtime. Hidden column will be available in column control.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCollapsed(boolean)} instead.
+     */
+    @Deprecated
     void setColumnCollapsed(Table.Column column, boolean collapsed);
 
     /**
      * Set column width in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setWidth(Integer)} instead.
      */
+    @Deprecated
     void setColumnWidth(String columnId, int width);
+
+    /**
+     * Set column width in runtime.
+     *
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setWidth(Integer)} instead.
+     */
+    @Deprecated
     void setColumnWidth(Table.Column column, int width);
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setAlignment(ColumnAlignment)} instead.
+     */
+    @Deprecated
     void setColumnAlignment(String columnId, ColumnAlignment alignment);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setAlignment(ColumnAlignment)} instead.
+     */
+    @Deprecated
     void setColumnAlignment(Column column, ColumnAlignment alignment);
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setAggregation(AggregationInfo)} instead.
+     */
+    @Deprecated
     void addAggregationProperty(String columnId, AggregationInfo.Type type);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setAggregation(AggregationInfo)} instead.
+     */
+    @Deprecated
     void addAggregationProperty(Column columnId, AggregationInfo.Type type);
     void removeAggregationProperty(String columnId);
 
@@ -198,9 +271,19 @@ public interface Table<E extends Entity>
     void setColumnControlVisible(boolean columnCollapsingAllowed);
     boolean getColumnControlVisible();
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setSortable(boolean)} instead.
+     */
+    @Deprecated
     void setColumnSortable(String columnId, boolean sortable);
     boolean getColumnSortable(String columnId);
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setSortable(boolean)} instead.
+     */
+    @Deprecated
     void setColumnSortable(Column column, boolean sortable);
     boolean getColumnSortable(Column column);
 
@@ -209,7 +292,10 @@ public interface Table<E extends Entity>
      *
      * @param columnId      column id
      * @param captionAsHtml interpret caption as HTML or not
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCaptionAsHtml(boolean)} instead.
      */
+    @Deprecated
     void setColumnCaptionAsHtml(String columnId, boolean captionAsHtml);
 
     /**
@@ -217,7 +303,10 @@ public interface Table<E extends Entity>
      *
      * @param column        column
      * @param captionAsHtml interpret caption as HTML or not
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#setCaptionAsHtml(boolean)} instead.
      */
+    @Deprecated
     void setColumnCaptionAsHtml(Table.Column column, boolean captionAsHtml);
 
     /**
@@ -940,7 +1029,7 @@ public interface Table<E extends Entity>
         public void setCaption(String caption) {
             this.caption = caption;
             if (owner != null) {
-                owner.setColumnCaption(this, caption);
+                ((ColumnManager) owner).setColumnCaption(this, caption);
             }
         }
 
@@ -953,7 +1042,7 @@ public interface Table<E extends Entity>
         public void setDescription(String description) {
             this.description = description;
             if (owner != null) {
-                owner.setColumnDescription(this, description);
+                ((ColumnManager) owner).setColumnDescription(this, description);
             }
         }
 
@@ -1001,7 +1090,7 @@ public interface Table<E extends Entity>
         public void setAlignment(ColumnAlignment alignment) {
             this.alignment = alignment;
             if (alignment != null && owner != null) {
-                owner.setColumnAlignment(this, alignment);
+                ((ColumnManager) owner).setColumnAlignment(this, alignment);
             }
         }
 
@@ -1012,7 +1101,7 @@ public interface Table<E extends Entity>
         public void setWidth(Integer width) {
             this.width = width;
             if (width != null && owner != null) {
-                owner.setColumnWidth(this, width);
+                ((ColumnManager) owner).setColumnWidth(this, width);
             }
         }
 
@@ -1023,7 +1112,7 @@ public interface Table<E extends Entity>
         public void setCollapsed(boolean collapsed) {
             this.collapsed = collapsed;
             if (owner != null) {
-                owner.setColumnCollapsed(this, collapsed);
+                ((ColumnManager) owner).setColumnCollapsed(this, collapsed);
             }
         }
 
@@ -1034,7 +1123,7 @@ public interface Table<E extends Entity>
         public void setGroupAllowed(boolean groupAllowed) {
             this.groupAllowed = groupAllowed;
             if (owner instanceof GroupTable) {
-                ((GroupTable) owner).setColumnGroupAllowed(this, groupAllowed);
+                ((GroupColumnManager) owner).setColumnGroupAllowed(this, groupAllowed);
             }
         }
 
@@ -1045,7 +1134,7 @@ public interface Table<E extends Entity>
         public void setSortable(boolean sortable) {
             this.sortable = sortable;
             if (owner != null) {
-                owner.setColumnSortable(this, sortable);
+                ((ColumnManager) owner).setColumnSortable(this, sortable);
             }
         }
 
@@ -1056,7 +1145,7 @@ public interface Table<E extends Entity>
         public void setAggregation(AggregationInfo aggregation) {
             this.aggregation = aggregation;
             if (owner != null) {
-                owner.addAggregationProperty(this, aggregation.getType());
+                ((ColumnManager) owner).addAggregationProperty(this, aggregation.getType());
             }
         }
 
@@ -1119,7 +1208,7 @@ public interface Table<E extends Entity>
         public void setCaptionAsHtml(boolean captionAsHtml) {
             this.captionAsHtml = captionAsHtml;
             if (owner != null) {
-                owner.setColumnCaptionAsHtml(this, captionAsHtml);
+                ((ColumnManager) owner).setColumnCaptionAsHtml(this, captionAsHtml);
             }
         }
 
