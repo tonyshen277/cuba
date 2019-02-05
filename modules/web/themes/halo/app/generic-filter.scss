@@ -70,6 +70,10 @@ $cuba-filter-friendly-search-button: false !default;
     background: transparent;
   }
 
+  .#{$primary-stylename} .filter-conditions .conditions-grid .param-label-layout {
+    height: $v-unit-size !important;
+  }
+
   .#{$primary-stylename} .filter-search-button-layout {
     .v-button.filter-search-button {
       border-right: 1px solid transparent;
