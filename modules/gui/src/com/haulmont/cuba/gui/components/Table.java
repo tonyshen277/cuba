@@ -223,6 +223,12 @@ public interface Table<E extends Entity>
      */
     @Deprecated
     void addAggregationProperty(Column columnId, AggregationInfo.Type type);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#removeAggregationProperty()} instead.
+     */
+    @Deprecated
     void removeAggregationProperty(String columnId);
 
     /**
@@ -277,6 +283,12 @@ public interface Table<E extends Entity>
      */
     @Deprecated
     void setColumnSortable(String columnId, boolean sortable);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#isSortable()} instead.
+     */
+    @Deprecated
     boolean getColumnSortable(String columnId);
 
     /**
@@ -285,6 +297,12 @@ public interface Table<E extends Entity>
      */
     @Deprecated
     void setColumnSortable(Column column, boolean sortable);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated User {@link Column#isSortable()} instead.
+     */
+    @Deprecated
     boolean getColumnSortable(Column column);
 
     /**
@@ -311,16 +329,20 @@ public interface Table<E extends Entity>
 
     /**
      * @param columnId column id
-     *
      * @return whether caption of column with the given {@code columnId} should be interpreted as HTML or not
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#isCaptionAsHtml()} instead.
      */
+    @Deprecated
     boolean getColumnCaptionAsHtml(String columnId);
 
     /**
      * @param column column
-     *
      * @return whether caption of the given {@code column} should be interpreted as HTML or not
+     * @see #getColumn(String)
+     * @deprecated Use {@link Column#isCaptionAsHtml()} instead.
      */
+    @Deprecated
     boolean getColumnCaptionAsHtml(Table.Column column);
 
     /**
@@ -1224,6 +1246,13 @@ public interface Table<E extends Entity>
         @Override
         public boolean isCaptionAsHtml() {
             return captionAsHtml;
+        }
+
+        /**
+         * Removes the column from aggregation cells list.
+         */
+        public void removeAggregationProperty() {
+            ((ColumnManager) owner).removeAggregationProperty(getStringId());
         }
     }
 

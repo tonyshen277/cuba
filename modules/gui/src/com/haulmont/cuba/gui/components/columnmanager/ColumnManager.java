@@ -127,6 +127,13 @@ public interface ColumnManager {
     void addAggregationProperty(Table.Column columnId, AggregationInfo.Type type);
 
     /**
+     * Removes the column from aggregation cells list.
+     *
+     * @param columnId column id
+     */
+    void removeAggregationProperty(String columnId);
+
+    /**
      * Enables sortable for the column.
      *
      * @param column   column instance
