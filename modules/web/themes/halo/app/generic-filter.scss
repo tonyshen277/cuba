@@ -70,8 +70,26 @@ $cuba-filter-friendly-search-button: false !default;
     background: transparent;
   }
 
-  .#{$primary-stylename} .filter-conditions .conditions-grid .param-label-layout {
-    height: $v-unit-size !important;
+  .#{$primary-stylename} .filter-conditions .conditions-grid {
+    .without-operation {
+      height: $v-unit-size !important;
+    }
+
+    .unary-param-type {
+      height: $v-unit-size !important;
+
+      @if $cuba-checkbox-size {
+        .v-checkbox-param-field {
+          line-height: $cuba-checkbox-line-height;
+          height: $cuba-checkbox-line-height + $cuba-checkbox-extra-height;
+        }
+      } @else {
+        .v-checkbox-param-field {
+          line-height: $cuba-checkbox-line-height;
+          height: $cuba-checkbox-line-height;
+        }
+      }
+    }
   }
 
   .#{$primary-stylename} .filter-search-button-layout {
