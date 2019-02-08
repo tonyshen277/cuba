@@ -74,19 +74,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridItemsEventsDelegate;
 import com.haulmont.cuba.web.gui.components.datagrid.SortableDataGridDataProvider;
-import com.haulmont.cuba.web.gui.components.renderers.RendererWrapper;
-import com.haulmont.cuba.web.gui.components.renderers.WebButtonRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebCheckBoxRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebClickableTextRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebComponentRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebDateRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebHtmlRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebImageRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebLocalDateRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebLocalDateTimeRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebNumberRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebProgressBarRenderer;
-import com.haulmont.cuba.web.gui.components.renderers.WebTextRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.components.valueproviders.DataGridConverterBasedValueProvider;
 import com.haulmont.cuba.web.gui.components.valueproviders.EntityValueProvider;
@@ -255,6 +243,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         builder.put(ImageRenderer.class, WebImageRenderer.class);
         builder.put(CheckBoxRenderer.class, WebCheckBoxRenderer.class);
         builder.put(ComponentRenderer.class, WebComponentRenderer.class);
+        builder.put(IconRenderer.class, WebIconRenderer.class);
 
         rendererClasses = builder.build();
     }
