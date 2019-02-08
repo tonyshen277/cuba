@@ -137,12 +137,14 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     protected boolean isShowBrowserContextMenu(Event event) {
-        EventTarget target = event.getEventTarget();
-        if (Element.is(target)) {
-            Element element = Element.as(target);
-            Widget widget = WidgetUtil.findWidget(element);
-            if (widget instanceof TextBoxBase) {
-                return true;
+        if (event != null) {
+            EventTarget target = event.getEventTarget();
+            if (Element.is(target)) {
+                Element element = Element.as(target);
+                Widget widget = WidgetUtil.findWidget(element);
+                if (widget instanceof TextBoxBase) {
+                    return true;
+                }
             }
         }
 
