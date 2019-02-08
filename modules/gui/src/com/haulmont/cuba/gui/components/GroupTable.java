@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.columnmanager.GroupColumnManager;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.data.GroupDatasource;
@@ -35,7 +34,7 @@ import java.util.Map;
  *
  * @param <E> row item type
  */
-public interface GroupTable<E extends Entity> extends Table<E>, GroupColumnManager {
+public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
 
