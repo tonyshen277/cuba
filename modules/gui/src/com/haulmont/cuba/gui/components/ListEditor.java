@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 
+import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -144,22 +145,30 @@ public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focus
 
     ItemType getItemType();
 
-    class EditorCloseEvent {
+    class EditorCloseEvent extends EventObject {
 
         protected String actionId;
-        protected Window window;
 
         public EditorCloseEvent(String actionId, Window window) {
+            super(window);
             this.actionId = actionId;
-            this.window = window;
         }
 
         public String getActionId() {
             return actionId;
         }
 
+        /**
+         * @deprecated Use {@link #getSource()} instead.
+         */
+        @Deprecated
         public Window getWindow() {
-            return window;
+            return getSource();
+        }
+
+        @Override
+        public Window getSource() {
+            return (Window) super.getSource();
         }
     }
 }
