@@ -30,6 +30,7 @@ $cuba-suggestionfield-edit-color: #dceeff !default;
   }
 
   .#{$primary-stylename}-popup {
+    max-height: 325px;
     min-width: 200px;
     max-width: 400px;
     overflow-y: auto;
