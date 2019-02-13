@@ -108,9 +108,9 @@ public class HtmlAttributesExtension extends AbstractExtension {
 
     public void removeDomAttribute(String querySelector, String attributeName) {
         if (!getState().attributes.isEmpty()) {
-            getState().attributes.get(querySelector)
+            getState().attributes.getOrDefault(querySelector, Collections.emptySet())
                     .removeIf(attributeInfo -> attributeInfo.getType() == AttributeType.DOM
-                    && attributeInfo.getName().equals(attributeName));
+                            && attributeInfo.getName().equals(attributeName));
 
             if (removeDomAttributes.isEmpty()) {
                 removeDomAttributes = new HashMap<>();
@@ -156,13 +156,14 @@ public class HtmlAttributesExtension extends AbstractExtension {
 
     public void removeCssProperty(String querySelector, String propertyName) {
         if (!getState().attributes.isEmpty()) {
-            getState().attributes.get(querySelector)
+            getState().attributes.getOrDefault(querySelector, Collections.emptySet())
                     .removeIf(attributeInfo -> attributeInfo.getType() == AttributeType.CSS
                             && attributeInfo.getName().equals(propertyName));
 
             if (removeCssProperties.isEmpty()) {
                 removeCssProperties = new HashMap<>();
             }
+            removeCssProperties.computeIfAbsent(querySelector, k -> new HashSet<>());
             removeCssProperties.get(querySelector).add(propertyName);
         }
     }
