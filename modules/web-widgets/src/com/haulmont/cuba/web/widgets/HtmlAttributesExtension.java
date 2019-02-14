@@ -77,7 +77,7 @@ public class HtmlAttributesExtension extends AbstractExtension {
         }
         state.attributes.computeIfAbsent(querySelector, k -> new HashSet<>());
 
-        state.attributes.get(querySelector).add(AttributeInfo.dom(attributeName, value));
+        addOrUpdate(state.attributes.get(querySelector), AttributeInfo.dom(attributeName, value));
     }
 
     public String getDomAttribute(String attributeName) {
@@ -86,20 +86,6 @@ public class HtmlAttributesExtension extends AbstractExtension {
 
     public String getDomAttribute(String querySelector, String attributeName) {
         return getAttributeValue(querySelector, attributeName, AttributeType.DOM);
-    }
-
-    protected String getAttributeValue(String querySelector, String attributeName, AttributeType type) {
-        Set<AttributeInfo> attributes = getState(false).attributes.get(querySelector);
-        if (CollectionUtils.isNotEmpty(attributes)) {
-            AttributeInfo found = attributes.stream().filter(attributeInfo ->
-                    attributeInfo.getType() == type
-                            && attributeInfo.getName().equals(attributeName))
-                    .findFirst().orElse(null);
-
-            return found != null ? found.getValue() : null;
-        }
-
-        return null;
     }
 
     public void removeDomAttribute(String attributeName) {
@@ -139,7 +125,7 @@ public class HtmlAttributesExtension extends AbstractExtension {
         }
         state.attributes.computeIfAbsent(querySelector, k -> new HashSet<>());
 
-        state.attributes.get(querySelector).add(AttributeInfo.css(propertyName, value));
+        addOrUpdate(state.attributes.get(querySelector), AttributeInfo.css(propertyName, value));
     }
 
     public String getCssProperty(String propertyName) {
@@ -165,6 +151,27 @@ public class HtmlAttributesExtension extends AbstractExtension {
             }
             removeCssProperties.computeIfAbsent(querySelector, k -> new HashSet<>());
             removeCssProperties.get(querySelector).add(propertyName);
+        }
+    }
+
+    protected String getAttributeValue(String querySelector, String attributeName, AttributeType type) {
+        Set<AttributeInfo> attributes = getState(false).attributes.get(querySelector);
+        if (CollectionUtils.isNotEmpty(attributes)) {
+            AttributeInfo found = attributes.stream().filter(attributeInfo ->
+                    attributeInfo.getType() == type
+                            && attributeInfo.getName().equals(attributeName))
+                    .findFirst().orElse(null);
+
+            return found != null ? found.getValue() : null;
+        }
+
+        return null;
+    }
+
+    protected void addOrUpdate(Set<AttributeInfo> attributes, AttributeInfo item) {
+        if (!attributes.add(item)) {
+            attributes.remove(item);
+            attributes.add(item);
         }
     }
 
