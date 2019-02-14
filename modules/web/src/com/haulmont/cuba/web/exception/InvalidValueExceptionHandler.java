@@ -44,11 +44,11 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
     public boolean handle(ErrorEvent event, App app) {
         // Finds the original source of the error/exception
         AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
-        if (handleDefaults(component, app)) {
-            return true;
-        }
+        boolean handled = handleDefaults(component, app);
 
-        boolean handled = super.handle(event, app);
+        if (!handled) {
+            handled = super.handle(event, app);
+        }
 
         //noinspection ThrowableResultOfMethodCallIgnored
         if (handled && event.getThrowable() != null) {
