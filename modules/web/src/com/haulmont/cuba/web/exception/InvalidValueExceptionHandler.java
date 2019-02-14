@@ -96,6 +96,10 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
         String datatypeId = AppBeans.get(DatatypeRegistry.class)
                 .getId(datatype);
 
+        if (datatypeId == null || datatypeId.isEmpty()) {
+            return null;
+        }
+
         return String.format("validationFail.%s", datatypeId);
     }
 
